@@ -14,6 +14,6 @@
 
 **Handoff**: the moment the active world changes. Must look seamless.
 
-**Cover**: the full-screen overlay (`ScreenMosaic`): white spreads over the screen, then clears from the center into a large cluster of broken (see-through) squares among unbroken (black) ones; each black square then breaks Minecraft-style, with staged cracks growing over it before it disappears.
+**Cover**: the full-screen overlay (`ScreenMosaic`): white spreads over the screen, then clears outward from the center into a large cluster of see-through squares where the world underneath shows.
 
 **Quality tier**: `low` or `high`, detected once at startup and passed to every world.
