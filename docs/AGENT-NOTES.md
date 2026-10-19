@@ -31,7 +31,7 @@ Give each agent its own folder (a world, or `utils/transitions`), its own dev-se
 - **Pong** (`rally.ts`): pure rally path with 10 contacts; the ball strikes the block as `crack` starts. `court.ts` holds `BLOCK_POS`, which `world.ts` and the scene both read. The block is black with a white frame; cracks and debris are white (the shared `CrackOverlay` draws dark cracks, invisible on black).
 - **Voxel** (`creeper.ts`, `beats.ts`): the creature wanders by clock time, drifts to its spot and turns to the camera during `notice`, ignites during `hiss`, explodes at `blast`. Its position is pure in `u` and time; the camera locks on `creeperSpot`. Trees and plants keep clear of the camera corridor and the creature stage (tests enforce it).
 - **Platformer** (`hero.ts`, `config.ts`): hero position and jumps are pure functions of x, which comes from `u`; jumps are centered on obstacles and never overlap (tests). `platformerCamera` centers on the hero and pulls back on narrow screens.
-- **Cover** (`utils/transitions/ScreenMosaic.tsx`, `crackAtlas.ts`): white covers, clears from the center into a large cluster of see-through squares among black ones, and the black ones crack in ten stages. Square size = screen height / `rows`, rounded to 8px.
+- **Cover** (`utils/transitions/ScreenMosaic.tsx`): white covers, then clears outward from the center into a large cluster of see-through squares; the overlay is gone after the first 30% of the reveal. Square size = screen height / `rows`, rounded to 8px.
 
 ## Known rough edges and ideas
 
