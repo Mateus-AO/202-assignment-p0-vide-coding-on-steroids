@@ -1,0 +1,89 @@
+import { describe, expect, it } from 'vitest'
+import { frameAt, REDUCED_STEPS_PER_WORLD } from './timeline'
+import type { WorldModule } from './world'
+
+const world = (
+  id: string,
+  exit?: WorldModule['exit'],
+  captions: WorldModule['captions'] = [],
+): WorldModule => ({
+  id,
+  Scene: () => null,
+  cameraPath: (u) => ({ position: [u, 0, 0], target: [u, 0, -1] }),
+  exit,
+  captions,
+})
+
+const worlds = [
+  world(
+    'a',
+    {
+      kind: 'portal',
+      position: [1, 0, 0],
+      size: [2, 2],
+      openAt: 0.5,
+      blendRange: [0.6, 0.9],
+    },
+    [{ from: 0, to: 0.5, text: 'first' }],
+  ),
+  world('b', { kind: 'cover', whiteFrom: 0.8, whiteFull: 0.9, revealLength: 0.4 }),
+  world('c'),
+]
+
+describe('frameAt', () => {
+  it('splits progress into the active world and local progress', () => {
+    const f = frameAt(worlds, 0.5)
+    expect(f.index).toBe(1)
+    expect(f.u).toBeCloseTo(0.5)
+    expect(f.world.id).toBe('b')
+  })
+
+  it('moves to the next world exactly at the boundary', () => {
+    expect(frameAt(worlds, 1 / 3).index).toBe(1)
+    expect(frameAt(worlds, 1 / 3).u).toBeCloseTo(0)
+  })
+
+  it('finishes on the last world at u = 1 and clamps out-of-range input', () => {
+    expect(frameAt(worlds, 1)).toMatchObject({ index: 2, u: 1 })
+    expect(frameAt(worlds, 7)).toMatchObject({ index: 2, u: 1 })
+    expect(frameAt(worlds, -1)).toMatchObject({ index: 0, u: 0 })
+  })
+
+  it('exposes the camera pose for an aspect ratio', () => {
+    expect(frameAt(worlds, 0.1).pose(1.5).position[0]).toBeCloseTo(0.3)
+  })
+
+  it('reports the portal only for portal exits, opening then blending', () => {
+    expect(frameAt(worlds, 0.1).portal).toEqual({ open: false, blend: 0 })
+    const open = frameAt(worlds, 0.55 / 3).portal!
+    expect(open).toEqual({ open: true, blend: 0 })
+    expect(frameAt(worlds, 0.95 / 3).portal).toEqual({ open: true, blend: 1 })
+    expect(frameAt(worlds, 0.5).portal).toBeNull()
+  })
+
+  it('picks the caption for the current progress', () => {
+    expect(frameAt(worlds, 0.1).caption?.text).toBe('first')
+    expect(frameAt(worlds, 0.3).caption).toBeUndefined()
+  })
+
+  describe('cover', () => {
+    it('is off before the cover starts', () => {
+      expect(frameAt(worlds, 1 / 3 + 0.1 / 3).cover).toEqual({ mode: 0, t: 0 })
+    })
+    it('is fully white at the end of the covering world and at the start of the next', () => {
+      expect(frameAt(worlds, 2 / 3 - 1e-9).cover).toMatchObject({ mode: 1 })
+      expect(frameAt(worlds, 2 / 3 - 1e-9).cover.t).toBeCloseTo(1)
+      expect(frameAt(worlds, 2 / 3).cover).toEqual({ mode: 2, t: 0 })
+    })
+    it('clears after revealLength', () => {
+      expect(frameAt(worlds, 2 / 3 + 0.5 / 3).cover.mode).toBe(0)
+    })
+  })
+
+  it('snaps progress in reduced-motion mode', () => {
+    const steps = REDUCED_STEPS_PER_WORLD * worlds.length
+    const f = frameAt(worlds, 0.43, { reduced: true })
+    expect(f.progress * steps).toBeCloseTo(Math.round(f.progress * steps))
+    expect(frameAt(worlds, 0.43, { reduced: false }).progress).toBe(0.43)
+  })
+})

@@ -1,0 +1,64 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-bg: #000;
+  --color-fg: #f2f2f7;
+  --color-muted: #8b8ba3;
+  --color-accent: #7c5cff;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-pixel: 'Press Start 2P', monospace;
+}
+
+/* Caption box: change the look here, nothing else needs touching. */
+:root {
+  --caption-bg: rgb(10 10 14 / 0.9);
+  --caption-fg: #ffffff;
+  --caption-accent: #ffd84d;
+  --caption-border: #e8e8f0;
+  --caption-border-size: 4px;
+  --caption-shadow: rgb(0 0 0 / 0.5);
+  --caption-padding: 24px;
+  --caption-font-size: 16px;
+  --caption-line-height: 24px;
+  --caption-max-width: 720px;
+}
+
+@layer base {
+  html {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+  }
+  body {
+    margin: 0;
+  }
+}
+
+@layer components {
+  /* Pixel-art dialog box: stepped corners via offset shadows, no blur, no radius. */
+  .pixel-box {
+    --b: var(--caption-border-size);
+    max-width: var(--caption-max-width);
+    padding: var(--caption-padding);
+    background: var(--caption-bg);
+    color: var(--caption-fg);
+    font-family: var(--font-pixel);
+    font-size: var(--caption-font-size);
+    line-height: var(--caption-line-height);
+    box-shadow:
+      0 calc(var(--b) * -1) 0 0 var(--caption-border),
+      0 var(--b) 0 0 var(--caption-border),
+      calc(var(--b) * -1) 0 0 0 var(--caption-border),
+      var(--b) 0 0 0 var(--caption-border),
+      calc(var(--b) * 3) calc(var(--b) * 3) 0 0 var(--caption-shadow);
+    -webkit-font-smoothing: none;
+    font-smooth: never;
+    text-rendering: optimizeSpeed;
+  }
+  .pixel-link {
+    color: var(--caption-accent);
+    text-decoration: underline;
+    text-underline-offset: 6px;
+    text-decoration-thickness: 4px;
+  }
+}
