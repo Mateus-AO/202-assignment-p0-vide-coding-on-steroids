@@ -16,6 +16,8 @@ src/
                   scene atmosphere (background + fog), InstancedBlocks
     transitions/  CrackOverlay, VoxelDebris, ScreenMosaic (full-screen cover)
     scroll/ hooks/
+    audio/        synthesized sound: AudioContext lifecycle, limiter + hard ceiling,
+                  tones/noise bursts, ambient beds, cue crossing, preference storage
   styles/       Tailwind entry + tokens
 ```
 
@@ -26,6 +28,7 @@ See `GLOSSARY.md` for the vocabulary (world, beat, timeline, frame, exit, cover)
 - Scroll gives raw progress. `frameAt(worlds, progress, { reduced })` (`core/timeline.ts`, pure) returns a **Frame**: active world, local progress `u`, camera pose, portal state, cover state, caption. `App` stores it; nothing else derives timing.
 - `CameraRig` applies `frame.pose`. `PortalGate` applies `frame.portal`. `ScreenMosaic` draws `frame.cover`. `Captions` shows `frame.caption`. Scenes read `getU()` inside `useFrame`, never during render. Scrubbing is deterministic and works in reverse.
 - `WorldStack` mounts only the active world and, inside its portal, the next world (drei `MeshPortalMaterial`).
+- Sound is off by default: `SoundControl` builds no AudioContext until a click, tap or key, and `soundDirector` plays each world's `sound.ts` cues for the progress the scroll crossed (forward only) and crossfades the world's ambient bed at handoffs.
 - Each world names its timing once in `beats.ts` (`defineBeats`). Scene files, the camera and the exit all read the same beats, and scene files never import `world.ts`, so there are no cycles.
 - The quality tier is detected once in `App` and passed to every scene as a prop. No module reads the browser at import time, so tests need no fake `window`.
 

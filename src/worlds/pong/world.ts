@@ -3,6 +3,7 @@ import { easeInOutCubic, lerp } from '@/utils/math'
 import { beats } from './beats'
 import { BLOCK_POS } from './court'
 import { Pong } from './Pong'
+import { sound } from './sound'
 
 export const pong = defineWorld({
   id: 'pong',
@@ -23,6 +24,7 @@ export const pong = defineWorld({
     openAt: beats.ranges.shatter[0],
     blendRange: [...beats.ranges.blend],
   },
+  sound,
   captions: [
     { from: 0, to: 0.4, text: '1972. Pong. One ball, two paddles, no crossovers.' },
     {

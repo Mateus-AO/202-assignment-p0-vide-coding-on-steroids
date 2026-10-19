@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react'
 import type { Vec3 } from '@/utils/math/types'
 import type { QualityTier } from '@/utils/three/quality'
+import type { WorldSound } from './sound'
 
 export type CameraPose = { position: Vec3; target: Vec3 }
 
@@ -56,6 +57,8 @@ export type WorldModule = {
   /** How the world hands over to the next one. Omit on the last world. */
   exit?: WorldExit
   captions: Caption[]
+  /** Ambient bed and cues, declared in the world's `sound.ts`. Optional: a world may be silent. */
+  sound?: WorldSound
 }
 
 const ASPECTS = [16 / 9, 0.5]

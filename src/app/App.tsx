@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { GlobalCanvas } from './GlobalCanvas'
 import { Captions } from './Captions'
+import { SoundControl } from './SoundControl'
 import { useAppStore } from './store'
 import { SCROLL_VH_PER_WORLD, worlds } from './worlds'
 import { frameAt } from '@/core/timeline'
@@ -37,6 +38,7 @@ export function App() {
     <>
       <GlobalCanvas quality={quality} />
       <Captions />
+      <SoundControl quality={quality} />
       <div aria-hidden style={{ height: `${worlds.length * SCROLL_VH_PER_WORLD}vh` }} />
     </>
   )
