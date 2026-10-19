@@ -24,7 +24,7 @@ const COVER_OFF: CoverPhase = { mode: 0, t: 0 }
 
 /** A cover phase; the default `mosaic` style is left out so those frames stay as they were. */
 const coverPhase = (mode: 1 | 2, t: number, style?: CoverStyle): CoverPhase =>
-  style === 'black' ? { mode, t, style } : { mode, t }
+  style === 'black' || style === 'crt' ? { mode, t, style } : { mode, t }
 
 const weightOf = (world: WorldModule) => world.scrollWeight ?? 1
 
@@ -68,7 +68,11 @@ export function frameAt(
 
   let cover = COVER_OFF
   if (exit?.kind === 'cover') {
-    const t = smoothstep(exit.whiteFrom, exit.whiteFull, u)
+    // The CRT shutdown shapes its own timing from a linear phase; the others ease it here.
+    const t =
+      exit.style === 'crt'
+        ? clamp((u - exit.whiteFrom) / (exit.whiteFull - exit.whiteFrom), 0, 1)
+        : smoothstep(exit.whiteFrom, exit.whiteFull, u)
     if (t > 0) cover = coverPhase(1, t, exit.style)
   }
   const previous = worlds[index - 1]?.exit

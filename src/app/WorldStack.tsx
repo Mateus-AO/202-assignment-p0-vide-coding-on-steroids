@@ -4,14 +4,24 @@ import { MeshPortalMaterial } from '@react-three/drei'
 import type { Mesh } from 'three'
 import type { PortalExit, WorldModule } from '@/core/world'
 import type { QualityTier } from '@/utils/three/quality'
-import { ScreenMosaic } from '@/utils/transitions/ScreenMosaic'
+import { CrtShutdown } from '@/utils/transitions/CrtShutdown'
+import { ScreenMosaic, type CoverPhase } from '@/utils/transitions/ScreenMosaic'
 import { usePrefersReducedMotion } from '@/utils/hooks/usePrefersReducedMotion'
 import { getFrame, useAppStore } from './store'
 import { worlds } from './worlds'
 
 const getU = () => getFrame().u
 const getZero = () => 0
-const getCover = () => getFrame().cover
+const COVER_OFF: CoverPhase = { mode: 0, t: 0 }
+/** The mosaic draws every cover except the CRT shutdown, which `CrtShutdown` draws. */
+const getCover = () => {
+  const cover = getFrame().cover
+  return cover.style === 'crt' ? COVER_OFF : cover
+}
+const getCrt = () => {
+  const cover = getFrame().cover
+  return cover.style === 'crt' ? cover : COVER_OFF
+}
 
 /** Moves the camera along the active world's path. */
 export function CameraRig() {
@@ -67,6 +77,7 @@ export function WorldStack({ quality }: { quality: QualityTier }) {
         )}
       </group>
       <ScreenMosaic getPhase={getCover} simple={reduced} />
+      <CrtShutdown getPhase={getCrt} simple={reduced} />
     </>
   )
 }
