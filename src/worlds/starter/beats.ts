@@ -11,7 +11,5 @@ export const beats = defineBeats({
 
 /** The portal opens in the glass once the picture has gone dark. */
 export const OPEN_AT = beats.ranges.tune[1]
-/** The caption (title and tagline) is up while the screen waits and the flight begins. */
-export const CAPTION_END = 0.12
 /** The Play button is shown only below this progress (the flight has not really started). */
 export const BUTTON_UNTIL = 0.04

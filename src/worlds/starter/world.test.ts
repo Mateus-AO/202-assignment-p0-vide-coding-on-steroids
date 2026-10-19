@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { frameAt } from '@/core/timeline'
-import { captionProblem } from '@/core/caption'
-import { beats, BUTTON_UNTIL, CAPTION_END, OPEN_AT } from './beats'
+import { beats, BUTTON_UNTIL, OPEN_AT } from './beats'
 import {
   glassRect,
   HALF_FOV_TAN,
@@ -96,12 +95,9 @@ describe('starter world', () => {
     expect(beats.ranges.blend[0]).toBeGreaterThan(OPEN_AT)
   })
 
-  it('shows its title while the screen waits and drops it once the flight has started', () => {
-    expect(captions.length).toBeGreaterThan(0)
-    for (const c of captions) expect(captionProblem(c)).toBeUndefined()
-    expect(BUTTON_UNTIL).toBeLessThan(CAPTION_END)
-    expect(captions[0].from).toBe(0)
-    expect(captions[0].to).toBe(CAPTION_END)
+  it('has no caption box: its words are drawn on the glass', () => {
+    expect(captions).toEqual([])
+    expect(BUTTON_UNTIL).toBeLessThan(OPEN_AT)
   })
 
   it('is the active world at the very start', () => {

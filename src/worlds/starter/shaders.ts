@@ -82,30 +82,18 @@ export const glassFragment = /* glsl */ `
 `
 
 /**
- * The casing's front plate with a window in it. Black, with a lit bevel round the window and a
- * power light below it.
+ * The casing's front plate with a window in it. Plain black with a power light below it:
+ * no bevel and nothing spills from the picture onto the plate.
  */
 export const plateFragment = /* glsl */ `
   uniform vec2 uHole;
-  uniform float uRadius;
   uniform float uPower;
-  uniform float uGlow;
   varying vec2 vPos;
 
   void main() {
     vec2 p = vPos;
-    vec2 e = abs(p) - (uHole * 0.5 - uRadius);
-    float sd = length(max(e, 0.0)) - uRadius;
-
-    // Pure black round the picture; only the bevel, the glow and the power light are lit.
+    // Pure black round the picture; only the power light is lit.
     vec3 col = vec3(0.0);
-
-    // The bevel: light along the window's top and sides, dark along its bottom.
-    float rim = smoothstep(0.16, 0.0, sd);
-    float lit = 0.5 + 0.5 * clamp(p.y * 2.0 / uHole.y, -1.0, 1.0);
-    col += rim * (0.004 + 0.03 * lit);
-    // Light from the picture spills onto the plate round the window.
-    col += vec3(0.004, 0.02, 0.008) * exp(-max(sd, 0.0) * 5.0) * uGlow;
 
     // Power light at the lower left.
     float led = smoothstep(0.05, 0.03, length(p - vec2(-uHole.x * 0.5 + 0.35, -uHole.y * 0.5 - 0.3)));

@@ -7,16 +7,7 @@ import { usePrefersReducedMotion } from '@/utils/hooks/usePrefersReducedMotion'
 import { clamp, lerp } from '@/utils/math'
 import { useSceneAtmosphere } from '@/utils/three/useSceneAtmosphere'
 import { beats } from './beats'
-import {
-  GLASS_H,
-  GLASS_W,
-  GLASS_Z,
-  HOLE_H,
-  HOLE_RADIUS,
-  HOLE_W,
-  PLATE_Z,
-  glassRect,
-} from './camera'
+import { GLASS_H, GLASS_W, GLASS_Z, HOLE_H, HOLE_W, PLATE_Z, glassRect } from './camera'
 import { createPlateGeometry } from './casing'
 import { bootLog } from './captions'
 import { LOGICAL_H, LOGICAL_W } from './layout'
@@ -114,16 +105,13 @@ export function Starter({ getU, quality }: WorldProps) {
       },
       plate: {
         uHole: { value: [HOLE_W, HOLE_H] },
-        uRadius: { value: HOLE_RADIUS },
         uPower: { value: 1 },
-        uGlow: { value: 1 },
       },
     }),
     [screen, scale, reduced, quality],
   )
 
   const glass = useRef<ShaderMaterial>(null)
-  const plateMaterial = useRef<ShaderMaterial>(null)
   const run = useRef({ t0: -1, key: -1, view: createBootView() })
 
   useFrame(({ clock }) => {
@@ -164,8 +152,6 @@ export function Starter({ getU, quality }: WorldProps) {
       live.uFade.value = 1 - beats.smooth('tune', u)
       live.uNoise.value = reduced ? 0 : 0.4 * Math.sin(Math.PI * tune)
       live.uLines.value = lines
-      const spill = plateMaterial.current?.uniforms
-      if (spill) spill.uGlow.value = live.uFade.value
     }
   })
 
@@ -173,7 +159,6 @@ export function Starter({ getU, quality }: WorldProps) {
     <group>
       <mesh geometry={plate} position={[0, 0, PLATE_Z]}>
         <shaderMaterial
-          ref={plateMaterial}
           vertexShader={vertex}
           fragmentShader={plateFragment}
           uniforms={uniforms.plate}

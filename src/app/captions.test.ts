@@ -9,8 +9,8 @@ const MAX_CHARS = 260
 const MAX_STAT_CHARS = 14
 
 describe.each(worlds.map((w) => [w.id, w] as const))('captions of %s', (_, world) => {
-  it('has at least one caption', () => {
-    expect(world.captions.length).toBeGreaterThan(0)
+  it('has at least one caption, unless it draws its own words', () => {
+    if (world.id !== 'starter') expect(world.captions.length).toBeGreaterThan(0)
   })
 
   it('are all well-formed', () => {
@@ -56,9 +56,5 @@ describe('the page', () => {
       w.captions.filter((c) => c.link).map((c) => [w.id, c.link!.href] as const),
     )
     expect(links).toEqual([['voxel', 'https://github.com/morluto/rea']])
-  })
-
-  it('opens with a caption that is already written', () => {
-    expect(worlds[0].captions[0]).toMatchObject({ from: 0, settled: true })
   })
 })
