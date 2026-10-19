@@ -97,3 +97,19 @@ export function frameAt(
     caption: world.captions.find((c) => u >= c.from && u < c.to),
   }
 }
+
+/**
+ * The overall progress that leaves world `index` for the next one: its boundary, or in
+ * reduced-motion mode the first fixed step at or past it (progress snaps to steps there, and
+ * a short world may not contain a step of its own).
+ */
+export function progressPast(
+  worlds: readonly WorldModule[],
+  index: number,
+  { reduced = false }: { reduced?: boolean } = {},
+) {
+  const boundary = scrollBoundary(worlds, index + 1)
+  if (!reduced) return boundary
+  const steps = REDUCED_STEPS_PER_WORLD * worlds.length
+  return Math.min(1, Math.ceil(boundary * steps - 1e-9) / steps)
+}
