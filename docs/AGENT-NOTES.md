@@ -13,6 +13,7 @@ Non-obvious facts that cost time to learn. The environment (configs, scripts, fo
 - **Lights.** Materials are unlit (`MeshBasicMaterial`, `blockMaterials` shades faces by hand), so they work inside portals with no lights.
 - **Drive uniforms through the material.** Set a `ShaderMaterial`'s uniform values via `material.current.uniforms` (a ref), as `ScreenMosaic` and the terminal do. Mutating a memoized `uniforms` object never reached the GPU: the terminal's text stayed invisible (fade stuck at 0) while every test passed.
 - **GLSL `pow(x, y)` is undefined for negative `x`.** It gave NaN here and every glyph drew black. Square with `x * x`.
+- **Portal into a world with untoned materials.** `PortalGate` shifts the next world by its camera start at the viewport's real aspect (Pong pulls back on narrow screens). drei's blend quad tone-maps the whole picture, so a next world made of `toneMapped={false}` materials (Pong) looked grey in the portal (226) and jumped to 255 at the swap. The starter sets `gl.toneMapping = NoToneMapping` while mounted; check any new portal into such a world by comparing max pixel values just before and after the swap.
 - **Fog and sky share `HORIZON`** (`worlds/voxel/atmosphere.ts`). Change it in one place.
 
 ## Verifying visually
@@ -20,7 +21,7 @@ Non-obvious facts that cost time to learn. The environment (configs, scripts, fo
 1. `npm run dev -- --port <free port>`. Pick a port no other agent uses.
 2. In a scratch dir outside the repo: `npm i playwright && npx playwright install chromium`.
 3. From that dir: `PORT=<port> OUT=/tmp/shots node <repo>/scripts/shot.mjs 0.1 0.5 0.9`, then read the PNGs. Env: `W`, `H` (use 390×844 for phones), `PREFIX`.
-4. `/?progress=<p>` (dev only) pins overall progress p in [0, 1]. With N worlds, world i spans [i/N, (i+1)/N] and its local progress is `u = N*p - i`. Convert beat ranges to p before choosing shots.
+4. `/?progress=<p>` (dev only) pins overall progress p in [0, 1]. World i spans `[scrollBoundary(worlds, i), scrollBoundary(worlds, i + 1)]` (worlds have different `scrollWeight`s; the starter is 0.3), and its local progress is the position inside that span. Convert beat ranges to p before choosing shots. `/` (no `progress`) shows the starter's loading state; add `?boot=6` to hold it for 6 s.
 5. Headless Firefox (snap) hangs; use the Playwright Chromium. Software WebGL gives about 10 fps, so judge frame time by code (draw calls, per-frame allocation), not by that fps.
 6. Combine shots into contact sheets with Python PIL to compare moments.
 
@@ -30,6 +31,7 @@ Give each agent its own folder (a world, or `utils/transitions`), its own dev-se
 
 ## Per-world notes
 
+- **Starter** (`camera.ts`, `loading.ts`, `layout.ts`, `Starter.tsx`, `shaders.ts`, `casing.ts`): a plate with a rounded window in front of a 4 x 3 glass; the camera flies straight down -z from `startDistance(aspect)` to the glass plane. `camera.ts` is the contract: window and glass rectangles in viewport fractions at u = 0 (`windowRect`, `glassRect`) place the DOM Play button (`layout.ts`) and are tested for every aspect. The boot picture is a canvas redrawn only when its numeric key changes (typed characters, bar cells, OK bits, blink). Flicker is a 2 Hz, 2% brightness ripple plus a hum bar every 8 s; READY blinks at 1 Hz; all off under reduced motion. Scanline count follows the glass's pixel height to avoid moire on phones. Copy and the boot log are in `captions.ts`.
 - **Pong** (`rally.ts`): pure rally path with 10 contacts; the ball strikes the block as `crack` starts. `court.ts` holds `BLOCK_POS`, which `world.ts` and the scene both read. The block is black with a white frame; cracks and debris are white (the shared `CrackOverlay` draws dark cracks, invisible on black).
 - **Voxel** (`creeper.ts`, `beats.ts`): the creature wanders by clock time, drifts to its spot and turns to the camera during `notice`, ignites during `hiss`, explodes at `blast`. Its position is pure in `u` and time; the camera locks on `creeperSpot`. Trees and plants keep clear of the camera corridor and the creature stage (tests enforce it).
 - **Platformer** (`hero.ts`, `config.ts`, `beats.ts`): hero position and jumps are pure functions of x, which comes from `u`; jumps are centered on obstacles and never overlap (tests). `platformerCamera` centers on the hero and pulls back on narrow screens. The end is choreographed in `beats.ts`: `run` to the flag, `approach` (he steps to `LANE_Z` in front of the wall, which tests keep clear of the castle), `turn`, `enter` (walks into the door), `dolly` (camera ends 0.56 in front of the door, which then fills the screen at every aspect up to 2.4; tests), then `dark`, the black cover into the terminal. `mechanics.ts` exports the numbers the terminal shows. `sound.ts` puts every cue at `uAtX(x)` (the inverse of `heroX`, kept beside it in `hero.ts`), and its footsteps follow `heroTravel`, so they carry on to the door and stop while he stands turning; the `door` and `dark` cues sit on the `enter` and `dolly` beats.
@@ -45,7 +47,7 @@ Give each agent its own folder (a world, or `utils/transitions`), its own dev-se
 
 - Pong: after its last bounce the ball sits still until the block shatters.
 - Voxel: water is a flat plane; grass tufts read pale; oak crowns are blocky; the low quality tier has no screenshots.
-- Platformer: the walker's waddle runs on clock time; no pits or stomping.
+- Platformer: no pits or stomping.
 - Bundle is one chunk (~1.3 MB, 360 kB gzip); the world modules could load lazily.
 - Sound (`utils/audio`, each world's `sound.ts`): all synthesized, off until a click/tap/key unlocks it; `recordVoice` in `utils/audio` is the test double for checking what a cue plays.
 - Not built yet: the closing "what's next" crossover section (hero-shooter idea), touch controls are not needed (no interactive games).

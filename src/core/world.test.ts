@@ -56,7 +56,7 @@ describe('defineWorld', () => {
   })
   it('rejects bad caption ranges', () => {
     expect(() =>
-      defineWorld(base({ captions: [{ from: 0.5, to: 0.2, text: 'x' }] })),
+      defineWorld(base({ captions: [{ from: 0.5, to: 0.2, body: 'x' }] })),
     ).toThrow(/caption/)
   })
 })

@@ -29,7 +29,7 @@ const worlds = [
       openAt: 0.5,
       blendRange: [0.6, 0.9],
     },
-    [{ from: 0, to: 0.5, text: 'first' }],
+    [{ from: 0, to: 0.5, body: 'first' }],
   ),
   world('b', { kind: 'cover', whiteFrom: 0.8, whiteFull: 0.9, revealLength: 0.4 }),
   world('c'),
@@ -67,7 +67,7 @@ describe('frameAt', () => {
   })
 
   it('picks the caption for the current progress', () => {
-    expect(frameAt(worlds, 0.1).caption?.text).toBe('first')
+    expect(frameAt(worlds, 0.1).caption?.body).toBe('first')
     expect(frameAt(worlds, 0.3).caption).toBeUndefined()
   })
 

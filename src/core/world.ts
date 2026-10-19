@@ -3,16 +3,11 @@ import type { Vec3 } from '@/utils/math/types'
 import type { QualityTier } from '@/utils/three/quality'
 import type { CoverStyle } from '@/utils/transitions/ScreenMosaic'
 import type { WorldSound } from './sound'
+import { captionLabel, captionProblem, type Caption } from './caption'
 
 export type CameraPose = { position: Vec3; target: Vec3 }
 
-export type Caption = {
-  /** Local progress range [from, to) in which the caption is shown. */
-  from: number
-  to: number
-  text: string
-  link?: { href: string; label: string }
-}
+export type { Caption, CaptionStat } from './caption'
 
 export type WorldProps = {
   /** Local progress of this world in [0, 1]. Read it inside useFrame, not during render. */
@@ -87,8 +82,8 @@ export function defineWorld(world: WorldModule): WorldModule {
   )
     fail(world, 'scrollWeight must be a positive number')
   for (const c of world.captions) {
-    if (!(c.from >= 0 && c.from < c.to && c.to <= 1))
-      fail(world, `bad caption range for "${c.text}"`)
+    const problem = captionProblem(c)
+    if (problem) fail(world, `${problem} for "${captionLabel(c)}"`)
   }
 
   const exit = world.exit

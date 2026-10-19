@@ -2,6 +2,7 @@ import { defineWorld } from '@/core/world'
 import { easeInOutCubic, lerp, smoothstep } from '@/utils/math'
 import type { Vec3 } from '@/utils/math/types'
 import { beats } from './beats'
+import { captions } from './captions'
 import { creeperSpot } from './creeper'
 import { Voxel } from './Voxel'
 import { sound } from './sound'
@@ -46,17 +47,5 @@ export const voxel = defineWorld({
     revealLength: 0.4,
   },
   sound,
-  captions: [
-    { from: 0, to: 0.3, text: '2011. A whole world made of blocks, and of mods.' },
-    {
-      from: 0.3,
-      to: beats.ranges.hiss[0],
-      text: 'Today an AI agent can recover a mechanic from a decades-old binary and port it into a new game.',
-      link: {
-        href: 'https://github.com/morluto/rea',
-        label: 'See REA, a tool that does this',
-      },
-    },
-    { from: beats.ranges.hiss[0], to: 1, text: 'Sssssssssss…' },
-  ],
+  captions,
 })
