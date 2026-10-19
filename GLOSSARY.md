@@ -14,6 +14,8 @@
 
 **Handoff**: the moment the active world changes. Must look seamless.
 
-**Cover**: the full-screen overlay (`ScreenMosaic`): white spreads over the screen, then clears outward from the center into a large cluster of see-through squares where the world underneath shows. A cover with `style: 'black'` is instead a plain fade through black.
+**Cover**: the full-screen overlay (`ScreenMosaic`): white spreads over the screen, then clears outward from the center into a large cluster of see-through squares where the world underneath shows. A cover with `style: 'black'` is instead a plain fade through black, and `style: 'crt'` is a TV shutting down (bars close to a line, the line to a dot, then black).
+
+**Scroll weight**: a world's share of the page's scroll relative to the others (`scrollWeight`, default 1). The terminal is longer so its story keeps its scroll distance while a shutdown plays at its end.
 
 **Quality tier**: `low` or `high`, detected once at startup and passed to every world.

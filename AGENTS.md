@@ -12,7 +12,7 @@ A scroll-driven 3D landing page: one continuous camera move through game worlds 
 
 - Layers point down: `app/` → `worlds/` → `core/` → `utils/`; worlds never import each other. ESLint enforces it.
 - Name every timed moment of a world once in its `beats.ts`; the scene, camera and exit read it. Scene files never import `world.ts`.
-- Draw everything in code with original art (textures, characters, sounds). No ripped or trademarked assets, no real game names or characters on the page.
+- Draw everything in code with original art (textures, characters, sounds). No ripped or trademarked assets, no real game names or characters on the page. One exception, by the owner's decision: the wall world's picture is a hand-drawn pixel rendition of the Claude Code mascot, drawn from scratch in code with no copied files. It must not be reused elsewhere or imply endorsement; everything else still follows this rule.
 - Keep scenes scrubbable: position, animation and effects are pure functions of the world's progress `u`, read through `getU()` inside `useFrame`. Allocate nothing per frame; use instanced meshes.
 - Respect reduced motion and the quality tier (both reach every scene). Keep any flash at 2.5 pulses per second or fewer.
 - Design for phones: cameras take the aspect ratio and keep the subject in frame.
@@ -24,4 +24,4 @@ A scroll-driven 3D landing page: one continuous camera move through game worlds 
 
 ## Where things stand
 
-Four worlds are built: Pong rally, voxel field with a wandering creature that explodes into a white cover, platformer level that ends with the hero walking into the castle (the dark door fills the screen), and a holographic terminal that recovers the platformer's mechanics and explains decomps and REA. The terminal is the last world; what follows it is undecided. Sound is being built separately (a Devin session) and is not in this tree yet. Open ideas: the closing "what's next" crossover section, more worlds, splitting the 1.3 MB bundle, real-device performance checks.
+Five worlds are built: Pong rally, voxel field with a wandering creature that explodes into a white cover, platformer level that ends with the hero walking into the castle (the dark door fills the screen), a holographic terminal that recovers the platformer's mechanics and explains decomps and REA, and, after a CRT-style shutdown, a pile of nine old TVs that each run a decompile session and then combine into a picture whose eyes follow the pointer. The wall is the last world; the closing section is still to come. Sound (synthesized, off by default) covers every world and has not been auditioned on a real device. Open ideas: the closing "what's next" crossover section, more worlds, splitting the 1.3 MB bundle, real-device performance checks.
