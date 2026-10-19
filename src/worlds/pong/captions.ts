@@ -14,12 +14,12 @@ export const captions: Caption[] = [
     to: 0.42,
     kicker: 'WORLD 01 · 1972',
     headline: 'Pong',
-    body: 'One ball, two paddles, no crossovers.',
+    body: 'Pong has two parts. Rules: the ball bounces off walls and paddles, and where it lands on a paddle sets its angle. Assets: the white shapes and the beeps.',
     stats: [
       { label: 'YEAR', value: '1972' },
-      { label: 'PLAYERS', value: '2' },
       { label: 'PADDLES', value: '2' },
       { label: 'BALLS', value: '1' },
+      { label: 'BUILT FROM', value: 'logic chips' },
     ],
   },
   {
@@ -27,12 +27,12 @@ export const captions: Caption[] = [
     to: 0.7,
     kicker: 'THE IDEA',
     headline: 'Rules plus assets',
-    body: 'Every game is rules plus assets. Rules can be pulled apart.',
+    body: 'A game is rules plus assets. Rules decide what happens; assets are what you see and hear. Keep the rules, swap the assets, and it plays the same in a new costume.',
   },
   {
     from: 0.7,
     to: 1,
     kicker: 'BEHIND THE BLOCK',
-    body: '…and the next world was already running behind it.',
+    body: "Run one game's rules with another game's assets and you have a crossover. The next world was already running behind it.",
   },
 ]

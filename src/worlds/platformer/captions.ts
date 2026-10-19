@@ -16,7 +16,7 @@ export const captions: Caption[] = [
     to: 0.46,
     kicker: 'WORLD 03 · 1985',
     headline: 'Run, jump, flag',
-    body: 'A plumber, a flat world, a thousand remixes.',
+    body: 'A platformer repeats one loop: read the input, move the hero, check what he touches. A jump is only a launch speed plus gravity.',
     stats: [
       { label: 'LEVEL', value: `${mechanics.runDistance} blocks` },
       { label: 'PIPES', value: String(PIPES.length) },
@@ -28,9 +28,7 @@ export const captions: Caption[] = [
     from: 0.46,
     to: 0.78,
     kicker: 'TAKEN APART',
-    headline: 'Same trick, any world',
-    body: 'Every world you crossed can be taken apart like this.',
-    footnote:
-      'Jump height, jump width, how far a block bumps: a feel is a list of numbers.',
+    headline: 'A feel is a list of numbers',
+    body: 'How a game feels comes down to a short list: jump height, jump width, how far a block bumps. Recover it from the original and any other game can borrow that feel.',
   },
 ]

@@ -9,7 +9,8 @@ import { storyToU } from './beats'
  *   Give long copy a long range.
  * - Fields (all optional, at least one): kicker, headline, body, stats (up to 4 label/value
  *   pairs; a leading number counts up), footnote, link. Keep every fact checkable.
- * - No stats here: the terminal's own table shows the numbers, and the caption must not cover it.
+ * - No stats here, and the second body stays one line: the terminal's own table shows the numbers
+ *   and the caption must not cover it (check at desktop size).
  */
 export const captions: Caption[] = [
   {
@@ -17,7 +18,7 @@ export const captions: Caption[] = [
     to: storyToU(0.4),
     kicker: 'WORLD 04 · THE NUMBERS',
     headline: 'Under the hood',
-    body: 'Under every game is a pile of numbers someone chose.',
+    body: "A finished game is only bytes. A disassembler turns them into assembly: tiny steps like load, add, jump. Somewhere in there hides the hero's jump.",
     footnote: 'The bytes on screen are made up for this page.',
   },
   {
@@ -25,6 +26,6 @@ export const captions: Caption[] = [
     to: storyToU(1),
     kicker: 'RECOVERED',
     headline: 'The feel, rebuilt',
-    body: 'Recover the numbers and you can rebuild the feel.',
+    body: 'Name the routines, read the constants, rebuild the feel.',
   },
 ]

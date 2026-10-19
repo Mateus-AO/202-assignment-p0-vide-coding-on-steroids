@@ -12,7 +12,7 @@ export const captions: Caption[] = [
     from: 0.2,
     to: 0.56,
     kicker: 'WORLD 05 · MANY GAMES, ONE AGENT',
-    body: 'One decomp rebuilds one game. An agent can read many.',
+    body: 'One decomp rebuilds one game, after years of work. An agent can work through many binaries and report what each one does.',
     footnote: 'Nine screens, nine made-up binaries, one picture.',
   },
   {
@@ -20,6 +20,6 @@ export const captions: Caption[] = [
     to: 1,
     kicker: 'THE POINT',
     headline: 'Readable at last',
-    body: 'Give an agent the right tools and it can read what nobody documented.',
+    body: 'Give an agent the right tools and it can read what nobody documented. Every answer comes with its evidence, so a person can check the work.',
   },
 ]

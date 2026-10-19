@@ -15,20 +15,19 @@ export const captions: Caption[] = [
     to: 0.32,
     kicker: 'WORLD 02 · 2011',
     headline: 'Blocks',
-    body: 'A whole world made of blocks, and of mods.',
+    body: 'A voxel is a pixel with volume. The world is a 3D grid and each cell holds one block type. Because it is just data on a grid, players can add new blocks and behaviours as mods.',
     stats: [
       { label: 'YEAR', value: '2011' },
-      { label: 'MADE OF', value: 'blocks' },
+      { label: 'STORED AS', value: '3D grid' },
       { label: 'EXTENDED BY', value: 'mods' },
     ],
-    footnote: 'Everything here is a cube on a grid.',
   },
   {
     from: 0.32,
     to: beats.ranges.hiss[0],
     kicker: 'TODAY · REA',
     headline: 'Mechanics, recovered',
-    body: 'Today an AI agent can recover a mechanic from a decades-old binary and port it into a new game.',
+    body: 'A decompilation turns a finished program back into readable code, slowly, by hand. An AI agent with REA can open an old binary, find a mechanic and port it.',
     footnote: 'REA is an MCP server and CLI for AI agents. Its analysis runs locally.',
     link: {
       href: 'https://github.com/morluto/rea',
