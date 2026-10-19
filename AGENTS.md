@@ -24,4 +24,4 @@ A scroll-driven 3D landing page: one continuous camera move through game worlds 
 
 ## Where things stand
 
-Three worlds are built and polished: Pong rally, voxel field with a wandering creature that explodes into a white cover, platformer level. Open ideas: the closing "what's next" crossover section, more worlds, splitting the 1.3 MB bundle, real-device performance checks.
+Four worlds are built: Pong rally, voxel field with a wandering creature that explodes into a white cover, platformer level that ends with the hero walking into the castle (the dark door fills the screen), and a holographic terminal that recovers the platformer's mechanics and explains decomps and REA. The terminal is the last world; what follows it is undecided. Sound is being built separately (a Devin session) and is not in this tree yet. Open ideas: the closing "what's next" crossover section, more worlds, splitting the 1.3 MB bundle, real-device performance checks.
