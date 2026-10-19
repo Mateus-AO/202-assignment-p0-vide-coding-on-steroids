@@ -1,13 +1,47 @@
 import { describe, expect, it } from 'vitest'
-import { PIPES, QUESTION_X, RUN_DISTANCE, HERO_START, FLAG_X } from './config'
-import { blockBump, coinPop, coinTaken, flagHeight, heroX, heroY, JUMPS } from './hero'
+import { beats } from './beats'
+import {
+  CASTLE_X,
+  DOOR_HALF_WIDTH,
+  END_Z,
+  FLAG_X,
+  HERO_START,
+  LANE_Z,
+  PIPES,
+  QUESTION_X,
+} from './config'
+import {
+  blockBump,
+  coinPop,
+  coinTaken,
+  flagHeight,
+  heroTravel,
+  heroTurn,
+  heroX,
+  heroY,
+  heroZ,
+  JUMPS,
+  RUN_END_X,
+} from './hero'
 
 const PIPE_TOP = 3.6
 
 describe('hero motion', () => {
-  it('runs from the start to the end of the run', () => {
+  it('runs from the start to the goal, then walks on to the castle door', () => {
     expect(heroX(0)).toBe(HERO_START)
-    expect(heroX(1)).toBe(HERO_START + RUN_DISTANCE)
+    expect(heroX(beats.ranges.run[1])).toBeCloseTo(RUN_END_X)
+    expect(heroX(1)).toBeCloseTo(CASTLE_X)
+  })
+
+  it('never goes backward', () => {
+    for (let u = 0.001; u <= 1; u += 0.001) {
+      expect(heroX(u)).toBeGreaterThanOrEqual(heroX(u - 0.001))
+      expect(heroTravel(u)).toBeGreaterThanOrEqual(heroTravel(u - 0.001))
+    }
+  })
+
+  it('reaches the flag before the run ends', () => {
+    expect(heroX(beats.ranges.run[1])).toBeGreaterThan(FLAG_X)
   })
 
   it('stays on the ground between jumps and never goes underground', () => {
@@ -57,5 +91,38 @@ describe('hero motion', () => {
   it('slides the flag down at the goal', () => {
     expect(flagHeight(FLAG_X - 3, 8, 1)).toBe(8)
     expect(flagHeight(FLAG_X, 8, 1)).toBe(1)
+  })
+
+  describe('walking into the castle', () => {
+    const wallFront = 0.5
+    const wallLeft = CASTLE_X - 3.5
+
+    it('stays on the run line until the run is over', () => {
+      expect(heroZ(0)).toBe(0)
+      expect(heroZ(beats.ranges.run[1])).toBe(0)
+    })
+
+    it('steps in front of the wall before reaching it, and never overlaps the wall', () => {
+      // Facing along the run his arms reach 0.57 to each side (z); his front is 0.6 ahead (x).
+      for (let u = 0; u <= beats.ranges.enter[0]; u += 0.001) {
+        if (heroX(u) + 0.6 > wallLeft)
+          expect(heroZ(u) - 0.57).toBeGreaterThanOrEqual(wallFront)
+      }
+      expect(LANE_Z - 0.57).toBeGreaterThanOrEqual(wallFront)
+    })
+
+    it('turns to face the door only once he has stopped at it', () => {
+      expect(heroTurn(beats.ranges.turn[0])).toBe(0)
+      expect(heroTurn(beats.ranges.turn[1])).toBeCloseTo(Math.PI / 2)
+      expect(heroX(beats.ranges.turn[0])).toBeCloseTo(CASTLE_X)
+    })
+
+    it('ends inside the wall, centered on the door and out of sight', () => {
+      expect(heroX(1)).toBeGreaterThan(CASTLE_X - DOOR_HALF_WIDTH)
+      expect(heroX(1)).toBeLessThan(CASTLE_X + DOOR_HALF_WIDTH)
+      expect(heroZ(1)).toBeCloseTo(END_Z)
+      // Even his back (about 0.45 behind his center) is behind the wall's front face.
+      expect(heroZ(beats.ranges.enter[1]) + 0.45).toBeLessThan(wallFront)
+    })
   })
 })

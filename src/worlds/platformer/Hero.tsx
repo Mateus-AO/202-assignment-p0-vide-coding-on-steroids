@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import type { Group } from 'three'
 import type { WorldProps } from '@/core/world'
-import { heroX, heroY, runPhase } from './hero'
+import { heroTravel, heroTurn, heroX, heroY, heroZ, runPhase } from './hero'
 import type { PlatformerMaterials } from './textures'
 
 type Props = Pick<WorldProps, 'getU'> & { materials: PlatformerMaterials }
@@ -16,12 +16,14 @@ export function Hero({ getU, materials: m }: Props) {
   useFrame(() => {
     const r = root.current
     if (!r) return
-    const x = heroX(getU())
+    const u = getU()
+    const x = heroX(u)
     const y = heroY(x)
     const air = y > 0.02
-    const phase = runPhase(x)
+    const phase = runPhase(heroTravel(u))
 
-    r.position.set(x, y + (air ? 0 : Math.abs(Math.sin(phase)) * 0.07), 0)
+    r.position.set(x, y + (air ? 0 : Math.abs(Math.sin(phase)) * 0.07), heroZ(u))
+    r.rotation.y = heroTurn(u)
     r.rotation.z = air ? -0.12 : -0.05
 
     legs.current.forEach((leg, i) => {

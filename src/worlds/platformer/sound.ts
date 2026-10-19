@@ -1,25 +1,23 @@
 import { defineSound, type SoundCue } from '@/core/sound'
 import type { NoiseSpec, ToneSpec } from '@/utils/audio'
-import { COIN_XS, FLAG_X, HERO_START, QUESTION_X, RUN_DISTANCE } from './config'
-import { heroY, JUMPS, runPhase } from './hero'
-
-/** Local progress at which the hero is at x (the inverse of `heroX`). */
-export const uAtX = (x: number) => (x - HERO_START) / RUN_DISTANCE
+import { beats } from './beats'
+import { COIN_XS, FLAG_X, QUESTION_X } from './config'
+import { heroTravel, heroX, heroY, JUMPS, runPhase, uAtX } from './hero'
 
 /**
- * A foot lands every half run cycle (each time `runPhase` passes a multiple of pi), but only on
- * the ground. Distance-based, so steps stop when scrolling stops.
+ * Progress values at which a foot lands: every half run cycle of distance walked (each time
+ * `runPhase` of his travel passes a multiple of pi), but only on the ground. Distance-based, so
+ * steps stop when scrolling stops, and they carry on to the castle door and in through it.
  */
-export function footstepXs(resolution = 0.01) {
-  const xs: number[] = []
-  const end = HERO_START + RUN_DISTANCE
-  let half = Math.floor(runPhase(HERO_START) / Math.PI)
-  for (let x = HERO_START + resolution; x <= end; x += resolution) {
-    const h = Math.floor(runPhase(x) / Math.PI)
-    if (h !== half && heroY(x) === 0) xs.push(x)
+export function footstepUs(resolution = 0.0002) {
+  const us: number[] = []
+  let half = Math.floor(runPhase(heroTravel(0)) / Math.PI)
+  for (let u = resolution; u <= beats.ranges.enter[1]; u += resolution) {
+    const h = Math.floor(runPhase(heroTravel(u)) / Math.PI)
+    if (h !== half && heroY(heroX(u)) === 0) us.push(u)
     half = h
   }
-  return xs
+  return us
 }
 
 const STEP: NoiseSpec[] = [
@@ -48,8 +46,30 @@ const FANFARE: ToneSpec[] = [392, 523, 659, 784].map((freq, i) => ({
   gain: 0.09,
 }))
 
-const stepCues: SoundCue[] = footstepXs().map((x, i) => ({
-  at: uAtX(x),
+/** A dull thud and a short creak as he steps into the dark doorway. */
+const DOOR_THUD: ToneSpec = { wave: 'sine', freq: 120, to: 60, decay: 0.35, gain: 0.18 }
+const DOOR_CREAK: NoiseSpec = {
+  filter: 'bandpass',
+  freq: 380,
+  to: 220,
+  q: 4,
+  attack: 0.05,
+  decay: 0.5,
+  gain: 0.1,
+}
+/** A low swell as the camera pushes into the dark. */
+const DARK_SWELL: NoiseSpec = {
+  filter: 'lowpass',
+  freq: 200,
+  to: 900,
+  q: 0.8,
+  attack: 0.5,
+  decay: 1.2,
+  gain: 0.16,
+}
+
+const stepCues: SoundCue[] = footstepUs().map((u, i) => ({
+  at: u,
   name: `step:${i}`,
   continuous: true,
   play: (v) => v.noise(STEP[i % 2]),
@@ -97,6 +117,15 @@ export const sound = defineSound({
       },
     },
     { at: uAtX(FLAG_X - 2), name: 'flag', play: (v) => v.tone(FLAG_SLIDE) },
+    {
+      at: beats.ranges.enter[0],
+      name: 'door',
+      play: (v) => {
+        v.tone(DOOR_THUD)
+        v.noise(DOOR_CREAK)
+      },
+    },
+    { at: beats.ranges.dolly[0], name: 'dark', play: (v) => v.noise(DARK_SWELL) },
     {
       at: uAtX(FLAG_X),
       name: 'goal',
