@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import { GlobalCanvas } from './GlobalCanvas'
 import { Captions } from './Captions'
+import { PlayGate } from './PlayGate'
 import { SoundControl } from './SoundControl'
 import { useAppStore } from './store'
 import { SCROLL_VH_PER_WORLD, worlds } from './worlds'
 import { frameAt, totalScrollWeight } from '@/core/timeline'
+import { skipBoot } from '@/worlds/starter'
 import { WebGLFallback } from '@/components/WebGLFallback'
 import { usePrefersReducedMotion } from '@/utils/hooks/usePrefersReducedMotion'
 import { useSmoothScroll } from '@/utils/scroll/useSmoothScroll'
@@ -20,15 +22,21 @@ export function App() {
       useAppStore.getState().setFrame(frameAt(worlds, progress, { reduced })),
     [reduced],
   )
-  useSmoothScroll(onScroll)
 
   // Dev only: `?progress=0.6` pins the scene at that overall progress (handy for screenshots).
   const pinned = import.meta.env.DEV
     ? Number(new URLSearchParams(location.search).get('progress'))
     : NaN
+  const isPinned = Number.isFinite(pinned) && pinned > 0
+
+  // The page starts on the loading screen with scrolling locked until Play is pressed.
+  const scroll = useSmoothScroll(onScroll, { startLocked: !isPinned })
   useEffect(() => {
-    if (Number.isFinite(pinned) && pinned > 0) onScroll(pinned)
-  }, [pinned, onScroll])
+    if (!isPinned) return
+    skipBoot()
+    scroll.setLocked(false)
+    onScroll(pinned)
+  }, [isPinned, pinned, onScroll, scroll])
 
   if (!isWebGLAvailable()) {
     return <WebGLFallback className="min-h-screen" />
@@ -38,6 +46,7 @@ export function App() {
     <>
       <GlobalCanvas quality={quality} />
       <Captions />
+      <PlayGate scroll={scroll} />
       <SoundControl quality={quality} />
       <div
         aria-hidden
