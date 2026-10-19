@@ -118,6 +118,27 @@ describe('frameAt', () => {
       expect(frameAt(tv, 0.5 - 1e-9).cover.t).toBeCloseTo(1)
       expect(frameAt(tv, 0.5).cover).toEqual({ mode: 2, t: 0, style: 'crt' })
     })
+    it('carries the glitch style through both phases, with a linear phase', () => {
+      const wall = [
+        world('a', {
+          kind: 'cover',
+          whiteFrom: 0.8,
+          whiteFull: 1,
+          revealLength: 0.1,
+          style: 'glitch',
+        }),
+        world('b'),
+      ]
+      expect(frameAt(wall, 0.4 - 1e-9).cover).toEqual({ mode: 0, t: 0 })
+      expect(frameAt(wall, 0.425).cover).toMatchObject({ mode: 1, style: 'glitch' })
+      // A quarter into the window, not a smoothstep's 0.156.
+      expect(frameAt(wall, 0.425).cover.t).toBeCloseTo(0.25)
+      expect(frameAt(wall, 0.5 - 1e-9).cover.t).toBeCloseTo(1)
+      expect(frameAt(wall, 0.5).cover).toEqual({ mode: 2, t: 0, style: 'glitch' })
+      expect(frameAt(wall, 0.525).cover).toMatchObject({ mode: 2, style: 'glitch' })
+      expect(frameAt(wall, 0.525).cover.t).toBeCloseTo(0.5)
+      expect(frameAt(wall, 0.55).cover.mode).toBe(0)
+    })
   })
 
   it('snaps progress in reduced-motion mode', () => {

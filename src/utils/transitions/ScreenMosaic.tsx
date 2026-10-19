@@ -5,8 +5,8 @@ import { Vector2, type Mesh, type ShaderMaterial } from 'three'
 /**
  * `mosaic`: white, then broken squares. `black`: a plain fade through black. `crt`: a TV
  * shutting down (drawn by `CrtShutdown`; the mosaic skips it). `glitch`: the picture tears,
- * splits into colour channels and cuts to the next world; until its own component lands the
- * mosaic draws it.
+ * splits into colour channels and cuts to the next world (drawn by `GlitchCover`; the mosaic
+ * skips it too, see `overlays.ts`).
  */
 export type CoverStyle = 'mosaic' | 'black' | 'crt' | 'glitch'
 
