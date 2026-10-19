@@ -82,8 +82,8 @@ export const glassFragment = /* glsl */ `
 `
 
 /**
- * The casing's front plate with a window in it. Dark plastic with a little grain, a lit bevel
- * round the window, and a power light and speaker slits below it.
+ * The casing's front plate with a window in it. Black, with a lit bevel round the window and a
+ * power light below it.
  */
 export const plateFragment = /* glsl */ `
   uniform vec2 uHole;
@@ -92,19 +92,13 @@ export const plateFragment = /* glsl */ `
   uniform float uGlow;
   varying vec2 vPos;
 
-  float hash(vec2 p) {
-    return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
-  }
-
   void main() {
     vec2 p = vPos;
     vec2 e = abs(p) - (uHole * 0.5 - uRadius);
     float sd = length(max(e, 0.0)) - uRadius;
 
-    vec3 col = vec3(0.013, 0.0135, 0.015);
-    col *= 0.75 + 0.35 * smoothstep(-4.0, 4.0, p.y);
-    col *= 1.0 - 0.45 * smoothstep(1.0, 9.0, length(p));
-    col += (hash(floor(p * 90.0)) - 0.5) * 0.003;
+    // Pure black round the picture; only the bevel, the glow and the power light are lit.
+    vec3 col = vec3(0.0);
 
     // The bevel: light along the window's top and sides, dark along its bottom.
     float rim = smoothstep(0.16, 0.0, sd);
@@ -112,11 +106,6 @@ export const plateFragment = /* glsl */ `
     col += rim * (0.004 + 0.03 * lit);
     // Light from the picture spills onto the plate round the window.
     col += vec3(0.004, 0.02, 0.008) * exp(-max(sd, 0.0) * 5.0) * uGlow;
-
-    // Speaker slits at the lower right.
-    vec2 s = p - vec2(uHole.x * 0.5 - 0.7, -uHole.y * 0.5 - 0.36);
-    float slit = step(abs(s.x), 0.55) * step(0.0, fract(s.y * 11.0) - 0.45) * step(-0.18, s.y) * step(s.y, 0.05);
-    col *= 1.0 - 0.6 * slit;
 
     // Power light at the lower left.
     float led = smoothstep(0.05, 0.03, length(p - vec2(-uHole.x * 0.5 + 0.35, -uHole.y * 0.5 - 0.3)));
