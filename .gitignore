@@ -53,3 +53,6 @@ Thumbs.db
 # Scratch / screenshots
 tmp
 *.tmp
+
+# Agent worktrees
+.claude/worktrees/
