@@ -1,9 +1,55 @@
+# Dependencies
 node_modules
+.pnp
+.pnp.js
+
+# Build output
 dist
-*.local
-.DS_Store
+dist-ssr
+build
+.vite
+*.tsbuildinfo
+
+# Test & coverage
+coverage
+.nyc_output
+
+# Environment
 .env
 .env.*
 !.env.example
-coverage
-.vite
+*.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Caches
+.eslintcache
+.cache
+.parcel-cache
+.turbo
+.npm
+
+# Editors & IDEs
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code (per-machine settings)
+.claude/settings.local.json
+
+# Scratch / screenshots
+tmp
+*.tmp
