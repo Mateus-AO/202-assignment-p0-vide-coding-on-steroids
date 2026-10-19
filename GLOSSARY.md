@@ -23,3 +23,5 @@
 **Reveal**: how a caption is written: a scramble that resolves into the text, with a cursor, driven by the world's progress (so it scrubs both ways). Stats count up. Pure logic in `core/reveal.ts`.
 
 **Quality tier**: `low` or `high`, detected once at startup and passed to every world.
+
+**Boot / Play gate**: the first world (`starter`) is a CRT loading screen. Its bar follows real startup work (**readiness**: fonts, its own shaders, the next world compiled) and a minimum boot time; the DOM Play button enables when both are done. The page scroll is **locked** until Play is pressed; Play glides to the end of the starter, which is the fly-in.

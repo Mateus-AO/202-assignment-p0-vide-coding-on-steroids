@@ -27,6 +27,14 @@ describe('the real page', () => {
     })
   })
 
+  it('starts on the loading screen and flies through a portal into Pong', () => {
+    expect(worlds[0].id).toBe('starter')
+    expect(worlds[0].exit?.kind).toBe('portal')
+    expect(worlds[1].id).toBe('pong')
+    expect(frameAt(worlds, 0).index).toBe(0)
+    expect(frameAt(worlds, scrollBoundary(worlds, 1)).world.id).toBe('pong')
+  })
+
   it("shows the terminal the platformer's real numbers", () => {
     expect(recovered).toEqual(mechanics)
   })
