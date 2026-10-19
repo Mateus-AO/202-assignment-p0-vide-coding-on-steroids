@@ -1,3 +1,5 @@
+import type { CaptionAnchor, CaptionThemeId } from './captionTheme'
+
 /** One label/value pair in a caption's stats row, e.g. { label: 'year', value: '1972' }. */
 export type CaptionStat = { label: string; value: string }
 
@@ -21,6 +23,10 @@ export type Caption = {
   stats?: CaptionStat[]
   footnote?: string
   link?: { href: string; label: string }
+  /** Look of this caption's box; defaults to the world's `theme`. */
+  theme?: CaptionThemeId
+  /** Where the box sits; defaults to the theme's anchor. */
+  anchor?: CaptionAnchor
   /**
    * Shown complete from `from`, with no reveal. For the page's opening caption, so the page
    * never loads blank.

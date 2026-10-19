@@ -24,7 +24,9 @@ const COVER_OFF: CoverPhase = { mode: 0, t: 0 }
 
 /** A cover phase; the default `mosaic` style is left out so those frames stay as they were. */
 const coverPhase = (mode: 1 | 2, t: number, style?: CoverStyle): CoverPhase =>
-  style === 'black' || style === 'crt' ? { mode, t, style } : { mode, t }
+  style === 'black' || style === 'crt' || style === 'glitch'
+    ? { mode, t, style }
+    : { mode, t }
 
 const weightOf = (world: WorldModule) => world.scrollWeight ?? 1
 
