@@ -39,4 +39,5 @@ Give each agent its own folder (a world, or `utils/transitions`), its own dev-se
 - Voxel: water is a flat plane; grass tufts read pale; oak crowns are blocky; the low quality tier has no screenshots.
 - Platformer: the walker's waddle runs on clock time; no pits or stomping.
 - Bundle is one chunk (~1.3 MB, 360 kB gzip); the world modules could load lazily.
-- Not built yet: the closing "what's next" crossover section (hero-shooter idea), sound (would be synthesized, muted by default), touch controls are not needed (no interactive games).
+- Sound (`utils/audio`, each world's `sound.ts`): all synthesized, off until a click/tap/key unlocks it; `recordVoice` in `utils/audio` is the test double for checking what a cue plays.
+- Not built yet: the closing "what's next" crossover section (hero-shooter idea), touch controls are not needed (no interactive games).

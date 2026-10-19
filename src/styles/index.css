@@ -55,6 +55,30 @@
     font-smooth: never;
     text-rendering: optimizeSpeed;
   }
+  /* Small pixel button (the sound toggle). No transitions: nothing flashes. */
+  .pixel-button {
+    --b: 3px;
+    padding: 8px 10px;
+    background: var(--caption-bg);
+    color: var(--caption-fg);
+    font-family: var(--font-pixel);
+    font-size: 10px;
+    line-height: 16px;
+    cursor: pointer;
+    box-shadow:
+      0 calc(var(--b) * -1) 0 0 var(--caption-border),
+      0 var(--b) 0 0 var(--caption-border),
+      calc(var(--b) * -1) 0 0 0 var(--caption-border),
+      var(--b) 0 0 0 var(--caption-border);
+    -webkit-font-smoothing: none;
+  }
+  .pixel-button[aria-pressed='true'] {
+    color: var(--caption-accent);
+  }
+  .pixel-button:focus-visible {
+    outline: 3px solid var(--caption-accent);
+    outline-offset: 5px;
+  }
   .pixel-link {
     color: var(--caption-accent);
     text-decoration: underline;

@@ -2,6 +2,7 @@ import { defineWorld } from '@/core/world'
 import { lerp, smoothstep } from '@/utils/math'
 import { heroX, heroY } from './hero'
 import { Platformer } from './Platformer'
+import { sound } from './sound'
 
 /** Half the vertical field of view, as a tangent (the canvas uses fov 50). */
 export const HALF_FOV_TAN = Math.tan((25 * Math.PI) / 180)
@@ -32,6 +33,7 @@ export const platformer = defineWorld({
   id: 'platformer',
   Scene: Platformer,
   cameraPath: platformerCamera,
+  sound,
   captions: [
     { from: 0.2, to: 0.6, text: 'A plumber, a flat world, a thousand remixes.' },
     { from: 0.6, to: 1, text: 'Every world you crossed can be taken apart like this.' },

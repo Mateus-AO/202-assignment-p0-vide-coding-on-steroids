@@ -4,6 +4,7 @@ import type { Vec3 } from '@/utils/math/types'
 import { beats } from './beats'
 import { creeperSpot } from './creeper'
 import { Voxel } from './Voxel'
+import { sound } from './sound'
 
 export const voxel = defineWorld({
   id: 'voxel',
@@ -44,6 +45,7 @@ export const voxel = defineWorld({
     whiteFull: beats.ranges.blast[1],
     revealLength: 0.4,
   },
+  sound,
   captions: [
     { from: 0, to: 0.3, text: '2011. A whole world made of blocks, and of mods.' },
     {
