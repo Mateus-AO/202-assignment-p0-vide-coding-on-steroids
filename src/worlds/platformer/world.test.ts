@@ -1,7 +1,17 @@
 import { describe, expect, it } from 'vitest'
 import { beats } from './beats'
-import { CASTLE_X, DOOR_HALF_WIDTH, DOOR_TOP, DOOR_Z, HERO_HEIGHT } from './config'
-import { heroX, heroY } from './hero'
+import {
+  CAMERA,
+  CASTLE_X,
+  DOOR_HALF_WIDTH,
+  DOOR_TOP,
+  DOOR_Z,
+  FLAG_X,
+  HERO_HEIGHT,
+  PIPES,
+  WALKER_X,
+} from './config'
+import { heroX, heroY, uAtX } from './hero'
 import { HALF_FOV_TAN, platformerCamera } from './world'
 
 /** Phones in portrait up to a wide desktop. */
@@ -25,10 +35,46 @@ describe('platformer camera', () => {
     }
   })
 
-  it('centers the hero on a narrow screen and leads him on a wide one', () => {
+  it('keeps him just left of center on a narrow screen and leads him on a wide one', () => {
     const u = 0.3
-    expect(platformerCamera(u, 0.46).target[0]).toBeCloseTo(heroX(u))
+    expect(platformerCamera(u, 0.46).target[0]).toBeCloseTo(heroX(u) + CAMERA.phoneLead)
     expect(platformerCamera(u, 1.78).target[0]).toBeGreaterThan(heroX(u) + 3)
+  })
+
+  it.each(ASPECTS)(
+    'shows the next obstacle well before he has to jump it at aspect %f',
+    (aspect) => {
+      for (const at of [...PIPES, WALKER_X, FLAG_X]) {
+        // Five blocks before the obstacle he is about to crouch for the jump.
+        const u = uAtX(at - 5)
+        const { position, target } = platformerCamera(u, aspect)
+        const halfWidth = position[2] * HALF_FOV_TAN * aspect
+        // Its near edge (pipes are the widest, 1.2 to each side) is inside the right edge.
+        expect(at - 1.2).toBeLessThan(target[0] + halfWidth * 0.95)
+      }
+    },
+  )
+
+  it('centers the door before the dolly starts', () => {
+    for (const aspect of ASPECTS) {
+      const { position, target } = platformerCamera(beats.ranges.dolly[0], aspect)
+      expect(position[0]).toBeCloseTo(CASTLE_X, 3)
+      expect(target[0]).toBeCloseTo(CASTLE_X, 3)
+    }
+  })
+
+  it('moves smoothly: no sideways jump between scroll steps', () => {
+    for (const aspect of ASPECTS) {
+      let last = platformerCamera(0, aspect)
+      for (let u = 0.001; u <= 1; u += 0.001) {
+        const now = platformerCamera(u, aspect)
+        for (let i = 0; i < 3; i++) {
+          expect(Math.abs(now.position[i] - last.position[i])).toBeLessThan(0.8)
+          expect(Math.abs(now.target[i] - last.target[i])).toBeLessThan(0.8)
+        }
+        last = now
+      }
+    }
   })
 
   it('pulls back as the screen gets narrower', () => {

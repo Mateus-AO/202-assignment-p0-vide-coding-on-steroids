@@ -1,4 +1,4 @@
-import { lerp, smoothstep } from '@/utils/math'
+import { clamp, lerp, smoothstep } from '@/utils/math'
 import { beats } from './beats'
 import {
   BUMP_HEIGHT,
@@ -13,6 +13,8 @@ import {
   PIPES,
   QUESTION_X,
   RUN_DISTANCE,
+  WALKER_LAP,
+  WALKER_PACE,
   WALKER_X,
 } from './config'
 
@@ -58,7 +60,7 @@ type Jump = { at: number; width: number; height: number }
 export const JUMPS: Jump[] = [
   ...PIPES.map((at) => ({ at, ...PIPE_JUMP })),
   { at: QUESTION_X, width: 4, height: 1.9 },
-  { at: WALKER_X, width: 4, height: 2.2 },
+  { at: WALKER_X, width: 5, height: 2.8 },
   { at: FLAG_X - 3, width: 4, height: 2 },
 ]
 
@@ -71,6 +73,50 @@ export function heroY(x: number) {
   }
   return y
 }
+
+/**
+ * Where a jump is in its arc at `x`: 0 at take-off to 1 at landing, or -1 when the hero is not
+ * in one. The pose (stretch, squash, arms up) reads it.
+ */
+export function jumpProgress(x: number) {
+  for (const { at, width } of JUMPS) {
+    const t = (x - (at - width / 2)) / width
+    if (t > 0 && t < 1) return t
+  }
+  return -1
+}
+
+/**
+ * The hero's squash and stretch as a change in height (0 at rest): a crouch just before a
+ * jump, a stretch while he rises, a squash as he lands that settles over half a block.
+ */
+export function heroSquash(x: number) {
+  for (const { at, width } of JUMPS) {
+    const start = at - width / 2
+    const end = at + width / 2
+    const crouch = (x - (start - 0.45)) / 0.45
+    if (crouch > 0 && crouch < 1) return -0.12 * Math.sin(crouch * Math.PI)
+    const t = (x - start) / width
+    if (t >= 0 && t < 1) return 0.1 * Math.sin(t * Math.PI)
+    const land = (x - end) / 0.6
+    if (land >= 0 && land < 1) return -0.14 * Math.sin(land * Math.PI) * (1 - land)
+  }
+  return 0
+}
+
+/** 0 to 1 and back: arms up as he reaches the goal pole. */
+export const heroCheer = (x: number) =>
+  smoothstep(FLAG_X - 0.6, FLAG_X, x) - smoothstep(FLAG_X + 1.2, FLAG_X + 1.8, x)
+
+/**
+ * How much of the stride he shows: 1 while he moves, 0 while he stands turning to the door, so he
+ * is never frozen mid-step with his arms swinging. It eases out as the turn starts and back in as
+ * he sets off into the doorway.
+ */
+export const heroStride = (u: number) =>
+  1 -
+  smoothstep(0, 0.25, beats.linear('turn', u)) *
+    (1 - smoothstep(0, 0.25, beats.linear('enter', u)))
 
 /** Running animation phase; advances with distance so the hero stops when scrolling stops. */
 export const runPhase = (x: number) => x * 2.4
@@ -88,8 +134,30 @@ export function coinPop(x: number) {
   return { rise: COIN_RISE * Math.sin(t * Math.PI) + 0.8, spin: t * 14 }
 }
 
-/** A floating coin is gone once the hero reaches it. */
+/** A floating coin is taken once the hero reaches it. */
 export const coinTaken = (coinX: number, x: number) => x >= coinX - 0.3
+
+/** A taken coin flies up toward his head and shrinks away: 0 untouched, 1 gone. */
+export const coinCollect = (coinX: number, x: number) => clamp(x - (coinX - 0.3), 0, 1)
+
+/** The spin of a coin, per block of the hero's run, so scrolling spins it and standing still doesn't. */
+export const coinSpin = (x: number, i: number) => x * 2.4 + i
+
+/** The question block has been hit once the hero has passed under it. */
+export const blockHit = (x: number) => x >= QUESTION_X
+
+/** The walker's x: it paces to and fro around WALKER_X as the hero runs (pure in his x). */
+export const walkerX = (x: number) =>
+  WALKER_X + WALKER_PACE * Math.sin((x / WALKER_LAP) * 2 * Math.PI)
+
+/** The walker's waddle phase: its feet go up and down with the hero's distance run. */
+export const walkerStep = (x: number) => x * 4
+
+/** Which way it faces: 0 when it paces toward -x (the way its face points), pi toward +x. */
+export function walkerYaw(x: number) {
+  const dir = Math.cos((x / WALKER_LAP) * 2 * Math.PI)
+  return Math.PI * smoothstep(-0.25, 0.25, dir)
+}
 
 /** Height of the flag on the pole: slides down as the hero reaches the goal. */
 export function flagHeight(x: number, top: number, bottom: number) {
