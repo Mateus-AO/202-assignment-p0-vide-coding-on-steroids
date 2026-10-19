@@ -1,6 +1,8 @@
 import { defineWorld } from '@/core/world'
 import { easeInOutCubic, lerp } from '@/utils/math'
 import { HALF_FOV_TAN, SCREEN_H, SCREEN_W } from './layout'
+import { SHUTDOWN } from './beats'
+import { sound } from './sound'
 import { Terminal } from './Terminal'
 
 /** How much of the view the panel may fill at most, vertically and horizontally. */
@@ -29,6 +31,15 @@ export const terminal = defineWorld({
   id: 'terminal',
   Scene: Terminal,
   cameraPath: terminalCamera,
+  // Placeholder fade into the wall; the shutdown agent replaces it with the CRT cover.
+  exit: {
+    kind: 'cover',
+    style: 'black',
+    whiteFrom: SHUTDOWN[0],
+    whiteFull: SHUTDOWN[1],
+    revealLength: 0.02,
+  },
+  sound,
   captions: [
     {
       from: 0.12,

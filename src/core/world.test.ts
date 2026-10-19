@@ -22,6 +22,12 @@ describe('defineWorld', () => {
   it('accepts a well-formed world', () => {
     expect(() => defineWorld(base({ exit: portal }))).not.toThrow()
   })
+  it('accepts a positive scroll weight and rejects any other', () => {
+    expect(() => defineWorld(base({ scrollWeight: 1.5 }))).not.toThrow()
+    for (const bad of [0, -1, Number.NaN, Infinity]) {
+      expect(() => defineWorld(base({ scrollWeight: bad }))).toThrow(/scrollWeight/)
+    }
+  })
   it('rejects a portal that the camera does not end at', () => {
     expect(() => defineWorld(base({ exit: { ...portal, position: [5, 0, 0] } }))).toThrow(
       /portal position/,

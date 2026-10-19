@@ -3,11 +3,12 @@ import pong from '@/worlds/pong'
 import voxel from '@/worlds/voxel'
 import platformer from '@/worlds/platformer'
 import terminal from '@/worlds/terminal'
+import wall from '@/worlds/wall'
 
 /** Page order. To add a world: create its folder, then add it here. */
-export const worlds = [pong, voxel, platformer, terminal]
+export const worlds = [pong, voxel, platformer, terminal, wall]
 
 validateHandoffs(worlds)
 
-/** Scroll distance per world, in viewport heights. */
+/** Scroll distance per world of weight 1, in viewport heights. */
 export const SCROLL_VH_PER_WORLD = 300

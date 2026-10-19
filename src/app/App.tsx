@@ -4,7 +4,7 @@ import { Captions } from './Captions'
 import { SoundControl } from './SoundControl'
 import { useAppStore } from './store'
 import { SCROLL_VH_PER_WORLD, worlds } from './worlds'
-import { frameAt } from '@/core/timeline'
+import { frameAt, totalScrollWeight } from '@/core/timeline'
 import { WebGLFallback } from '@/components/WebGLFallback'
 import { usePrefersReducedMotion } from '@/utils/hooks/usePrefersReducedMotion'
 import { useSmoothScroll } from '@/utils/scroll/useSmoothScroll'
@@ -39,7 +39,10 @@ export function App() {
       <GlobalCanvas quality={quality} />
       <Captions />
       <SoundControl quality={quality} />
-      <div aria-hidden style={{ height: `${worlds.length * SCROLL_VH_PER_WORLD}vh` }} />
+      <div
+        aria-hidden
+        style={{ height: `${totalScrollWeight(worlds) * SCROLL_VH_PER_WORLD}vh` }}
+      />
     </>
   )
 }

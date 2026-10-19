@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { frameAt, REDUCED_STEPS_PER_WORLD } from './timeline'
+import {
+  frameAt,
+  REDUCED_STEPS_PER_WORLD,
+  scrollBoundary,
+  totalScrollWeight,
+} from './timeline'
 import type { WorldModule } from './world'
 
 const world = (
@@ -100,5 +105,28 @@ describe('frameAt', () => {
     const f = frameAt(worlds, 0.43, { reduced: true })
     expect(f.progress * steps).toBeCloseTo(Math.round(f.progress * steps))
     expect(frameAt(worlds, 0.43, { reduced: false }).progress).toBe(0.43)
+  })
+
+  describe('scroll weights', () => {
+    const long = { ...worlds[1], scrollWeight: 2 }
+    const weighted = [worlds[0], long, worlds[2]]
+
+    it('gives a heavier world a longer share of the scroll', () => {
+      expect(totalScrollWeight(weighted)).toBe(4)
+      expect(scrollBoundary(weighted, 1)).toBeCloseTo(1 / 4)
+      expect(scrollBoundary(weighted, 2)).toBeCloseTo(3 / 4)
+      expect(scrollBoundary(weighted, 3)).toBe(1)
+      expect(frameAt(weighted, 0.24).index).toBe(0)
+      expect(frameAt(weighted, 0.25)).toMatchObject({ index: 1, u: 0 })
+      expect(frameAt(weighted, 0.5)).toMatchObject({ index: 1 })
+      expect(frameAt(weighted, 0.5).u).toBeCloseTo(0.5)
+      expect(frameAt(weighted, 0.75)).toMatchObject({ index: 2, u: 0 })
+      expect(frameAt(weighted, 1)).toMatchObject({ index: 2, u: 1 })
+    })
+
+    it('splits evenly when no world has a weight', () => {
+      expect(scrollBoundary(worlds, 1)).toBeCloseTo(1 / 3)
+      expect(totalScrollWeight(worlds)).toBe(3)
+    })
   })
 })

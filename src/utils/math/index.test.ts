@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { clamp, easeInOutCubic, lerp, remap, smoothstep } from './index'
+import { clamp, damp, easeInOutCubic, lerp, remap, smoothstep } from './index'
 
 describe('math utils', () => {
   it('clamps', () => {
@@ -18,5 +18,14 @@ describe('math utils', () => {
     expect(easeInOutCubic(0)).toBe(0)
     expect(easeInOutCubic(1)).toBe(1)
     expect(easeInOutCubic(0.5)).toBeCloseTo(0.5)
+  })
+})
+
+describe('damp', () => {
+  it('eases toward the target at any frame rate', () => {
+    expect(damp(0, 1, 0, 8)).toBe(0)
+    expect(damp(0, 1, 10, 8)).toBeCloseTo(1)
+    const twoSteps = damp(damp(0, 1, 1 / 60, 8), 1, 1 / 60, 8)
+    expect(twoSteps).toBeCloseTo(damp(0, 1, 2 / 60, 8))
   })
 })

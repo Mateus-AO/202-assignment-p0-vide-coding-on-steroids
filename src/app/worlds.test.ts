@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { frameAt } from '@/core/timeline'
+import { frameAt, scrollBoundary } from '@/core/timeline'
 import { validateHandoffs } from '@/core/world'
 import { mechanics } from '@/worlds/platformer'
 import { recovered } from '@/worlds/terminal'
@@ -12,7 +12,7 @@ describe('the real page', () => {
 
   it('is continuous across every swap, at any aspect', () => {
     worlds.slice(0, -1).forEach((_, i) => {
-      const boundary = (i + 1) / worlds.length
+      const boundary = scrollBoundary(worlds, i + 1)
       const before = frameAt(worlds, boundary - 1e-9)
       const after = frameAt(worlds, boundary)
       expect(before.index).toBe(i)
@@ -36,7 +36,7 @@ describe('the real page', () => {
     expect(platformer.exit).toMatchObject({ kind: 'cover', style: 'black' })
     const i = worlds.indexOf(platformer)
     expect(worlds[i + 1].id).toBe('terminal')
-    const boundary = (i + 1) / worlds.length
+    const boundary = scrollBoundary(worlds, i + 1)
     expect(frameAt(worlds, boundary - 1e-9).cover).toMatchObject({
       mode: 1,
       style: 'black',

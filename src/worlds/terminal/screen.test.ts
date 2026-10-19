@@ -3,7 +3,7 @@ import { beats } from './beats'
 import { recovered } from './recovered'
 import { BLOCK, CELL_BYTES, renderScreen, SCREEN_BYTES, SCRAMBLE_SPAN } from './screen'
 import { COLS, LINES, ROWS, Tone } from './script'
-import { damp, MAX_TILT, tiltTarget, type Tilt } from './tilt'
+import { MAX_TILT, tiltTarget, type Tilt } from './tilt'
 
 const render = (u: number) => {
   const out = new Uint8Array(SCREEN_BYTES)
@@ -165,12 +165,5 @@ describe('tilt', () => {
   it('holds still with reduced motion, pointer or not', () => {
     expect(tiltTarget({ x: 1, y: 1 }, 0.3, true, out())).toEqual({ pitch: 0, yaw: 0 })
     expect(tiltTarget(null, 0.3, true, out())).toEqual({ pitch: 0, yaw: 0 })
-  })
-
-  it('eases toward the target at any frame rate', () => {
-    expect(damp(0, 1, 0, 8)).toBe(0)
-    expect(damp(0, 1, 10, 8)).toBeCloseTo(1)
-    const twoSteps = damp(damp(0, 1, 1 / 60, 8), 1, 1 / 60, 8)
-    expect(twoSteps).toBeCloseTo(damp(0, 1, 2 / 60, 8))
   })
 })

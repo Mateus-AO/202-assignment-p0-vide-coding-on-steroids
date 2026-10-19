@@ -5,15 +5,22 @@ import type { Group, InstancedMesh, ShaderMaterial } from 'three'
 import type { WorldProps } from '@/core/world'
 import { usePrefersReducedMotion } from '@/utils/hooks/usePrefersReducedMotion'
 import { usePointer } from '@/utils/hooks/usePointer'
+import { damp } from '@/utils/math'
 import { mulberry32 } from '@/utils/math/random'
 import { useSceneAtmosphere } from '@/utils/three/useSceneAtmosphere'
 import { beats } from './beats'
-import { ATLAS_COLS, ATLAS_ROWS, GLYPH_H, GLYPH_W, createFontAtlas } from './font'
+import {
+  ATLAS_COLS,
+  ATLAS_ROWS,
+  GLYPH_H,
+  GLYPH_W,
+  createFontAtlas,
+} from '@/utils/three/pixelFont'
 import { SCREEN_H, SCREEN_W } from './layout'
 import { renderScreen, SCREEN_BYTES } from './screen'
 import { COLS, ROWS } from './script'
 import { screenFragment, screenVertex } from './shaders'
-import { damp, tiltTarget } from './tilt'
+import { tiltTarget } from './tilt'
 
 const CYAN = '#59f3ff'
 /** How quickly the screen follows the pointer, per second. */

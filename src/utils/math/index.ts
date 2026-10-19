@@ -19,3 +19,7 @@ export function smoothstep(edge0: number, edge1: number, x: number) {
 
 export const easeInOutCubic = (t: number) =>
   t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+
+/** Moves `current` toward `target`, framerate-independent; `rate` is how fast per second. */
+export const damp = (current: number, target: number, dt: number, rate: number) =>
+  current + (target - current) * (1 - Math.exp(-rate * dt))

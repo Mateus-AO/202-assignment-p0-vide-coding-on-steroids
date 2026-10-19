@@ -26,11 +26,31 @@ const COVER_OFF: CoverPhase = { mode: 0, t: 0 }
 const coverPhase = (mode: 1 | 2, t: number, style?: CoverStyle): CoverPhase =>
   style === 'black' ? { mode, t, style } : { mode, t }
 
+const weightOf = (world: WorldModule) => world.scrollWeight ?? 1
+
+/** The page's total scroll length, in world-lengths (one per world, or its `scrollWeight`). */
+export const totalScrollWeight = (worlds: readonly WorldModule[]) =>
+  worlds.reduce((sum, w) => sum + weightOf(w), 0)
+
+/** Overall progress at which world `index` starts (`worlds.length` gives 1). */
+export function scrollBoundary(worlds: readonly WorldModule[], index: number) {
+  let before = 0
+  for (let i = 0; i < index; i++) before += weightOf(worlds[i])
+  return before / totalScrollWeight(worlds)
+}
+
 /** Splits overall progress into the active world and its local progress. */
-function split(progress: number, count: number) {
-  const x = progress * count
-  const index = Math.min(Math.floor(x), count - 1)
-  return { index, u: clamp(x - index, 0, 1) }
+function split(progress: number, worlds: readonly WorldModule[]) {
+  const last = worlds.length - 1
+  for (let i = 0; i < last; i++) {
+    const end = scrollBoundary(worlds, i + 1)
+    if (progress < end) {
+      const start = scrollBoundary(worlds, i)
+      return { index: i, u: clamp((progress - start) / (end - start), 0, 1) }
+    }
+  }
+  const start = scrollBoundary(worlds, last)
+  return { index: last, u: clamp((progress - start) / (1 - start), 0, 1) }
 }
 
 /** Everything the page needs to draw one moment of the scroll. Pure: same input, same frame. */
@@ -42,7 +62,7 @@ export function frameAt(
   const raw = clamp(rawProgress, 0, 1)
   const steps = REDUCED_STEPS_PER_WORLD * worlds.length
   const progress = reduced ? Math.round(raw * steps) / steps : raw
-  const { index, u } = split(progress, worlds.length)
+  const { index, u } = split(progress, worlds)
   const world = worlds[index]
   const exit = world.exit
 

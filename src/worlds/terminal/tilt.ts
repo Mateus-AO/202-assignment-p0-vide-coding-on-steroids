@@ -29,7 +29,3 @@ export function tiltTarget(
   }
   return out
 }
-
-/** Moves `current` toward `target`, framerate-independent; `rate` is how fast per second. */
-export const damp = (current: number, target: number, dt: number, rate: number) =>
-  current + (target - current) * (1 - Math.exp(-rate * dt))

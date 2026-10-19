@@ -61,6 +61,8 @@ export type WorldModule = {
   /** How the world hands over to the next one. Omit on the last world. */
   exit?: WorldExit
   captions: Caption[]
+  /** This world's share of the page's scroll relative to the others (default 1). */
+  scrollWeight?: number
   /** Ambient bed and cues, declared in the world's `sound.ts`. Optional: a world may be silent. */
   sound?: WorldSound
 }
@@ -74,6 +76,11 @@ function fail(world: WorldModule, message: string): never {
 
 /** Identity function that rejects a malformed world at load time. */
 export function defineWorld(world: WorldModule): WorldModule {
+  if (
+    world.scrollWeight !== undefined &&
+    !(world.scrollWeight > 0 && Number.isFinite(world.scrollWeight))
+  )
+    fail(world, 'scrollWeight must be a positive number')
   for (const c of world.captions) {
     if (!(c.from >= 0 && c.from < c.to && c.to <= 1))
       fail(world, `bad caption range for "${c.text}"`)
