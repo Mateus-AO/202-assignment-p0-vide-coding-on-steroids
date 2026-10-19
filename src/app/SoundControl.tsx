@@ -30,21 +30,23 @@ export function SoundControl({ quality }: { quality: QualityTier }) {
       engine.setEnabled(false)
       return
     }
-    const start = () => {
-      if (!engine.unlock()) return
+    // True only once the context is running; unlock() stays pending while the browser refuses.
+    const start = async () => {
+      if (!(await engine.unlock())) return false
       engine.setEnabled(true)
       director.reset(getFrame())
       director.update(getFrame(), reduced)
+      return engine.running
     }
     if (engine.unlocked) {
-      start()
+      void start()
       return
     }
     const onGesture = (e: Event) => {
       // The toggle handles its own clicks.
       if (e.target instanceof Element && e.target.closest('[data-sound-toggle]')) return
-      start()
-      if (engine.unlocked) remove()
+      // Listeners come off only once the context is running; a refused gesture retries.
+      void start().then((started) => started && remove())
     }
     const remove = () => GESTURES.forEach((g) => window.removeEventListener(g, onGesture))
     GESTURES.forEach((g) => window.addEventListener(g, onGesture))
@@ -54,7 +56,7 @@ export function SoundControl({ quality }: { quality: QualityTier }) {
   const toggle = () => {
     const next = !on
     // Must happen inside the click itself, or the browser keeps the context locked.
-    if (next) engine.unlock()
+    if (next) void engine.unlock()
     setOn(next)
     writeFlag(getStorage(), STORAGE_KEY, next)
   }

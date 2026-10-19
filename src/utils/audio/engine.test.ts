@@ -3,8 +3,15 @@ import { createAudioEngine } from './engine'
 import { clampGain, hardClipCurve, OUTPUT_CEILING } from './limits'
 import { envelopeTimes } from './voices'
 
-/** Just enough of an AudioContext to record the graph. */
-function fakeContext() {
+/**
+ * Just enough of an AudioContext to record the graph. `state` starts 'suspended' unless the
+ * context is made `running`; `resume()` resolves once `state` is 'running' — pass a
+ * `resume` stub to model a browser that refuses.
+ */
+function fakeContext({
+  running = false,
+  resume,
+}: { running?: boolean; resume?: () => Promise<void> } = {}) {
   const nodes: { kind: string; node: Record<string, unknown> }[] = []
   const param = () => ({
     value: 0,
@@ -25,12 +32,18 @@ function fakeContext() {
     return n
   }
   const ctx = {
-    state: 'running',
+    state: running ? 'running' : 'suspended',
     currentTime: 0,
     sampleRate: 8000,
     destination: {},
-    resume: async () => {},
-    suspend: async () => {},
+    resume:
+      resume ??
+      (async () => {
+        ctx.state = 'running'
+      }),
+    suspend: async () => {
+      ctx.state = 'suspended'
+    },
     createGain: () => node('gain', { gain: param() }),
     createDynamicsCompressor: () =>
       node('compressor', {
@@ -49,7 +62,7 @@ function fakeContext() {
       getChannelData: () => new Float32Array(length),
     }),
   }
-  return { ctx: ctx as unknown as AudioContext, nodes }
+  return { ctx: ctx as unknown as AudioContext, raw: ctx as { state: string }, nodes }
 }
 
 const TONE = { freq: 440, decay: 0.1, gain: 0.5 }
@@ -60,40 +73,42 @@ describe('audio engine', () => {
     const engine = createAudioEngine({
       createContext: () => {
         made++
-        return fakeContext().ctx
+        return fakeContext({ running: true }).ctx
       },
     })
     engine.setEnabled(true)
     engine.voice.tone(TONE)
     expect(made).toBe(0)
     expect(engine.active).toBe(false)
+    expect(engine.running).toBe(false)
     expect(engine.createBed({ layers: [{ source: 'sine', gain: 0.1 }] })).toBeNull()
   })
 
-  it('caps the final gain at the ceiling, however high it is asked to be', () => {
+  it('caps the final gain at the ceiling, however high it is asked to be', async () => {
     const { ctx, nodes } = fakeContext()
     const engine = createAudioEngine({ ceiling: 5, createContext: () => ctx })
-    expect(engine.unlock()).toBe(true)
+    expect(await engine.unlock()).toBe(true)
     const gains = nodes.filter((n) => n.kind === 'gain')
     const out = gains[gains.length - 1].node.gain as { value: number }
     expect(out.value).toBe(OUTPUT_CEILING)
     expect(nodes.some((n) => n.kind === 'shaper')).toBe(true)
   })
 
-  it('is silent while off and plays once enabled', () => {
+  it('is silent while off and plays once enabled and running', async () => {
     const { ctx, nodes } = fakeContext()
     const engine = createAudioEngine({ createContext: () => ctx })
-    engine.unlock()
+    await engine.unlock()
     const before = nodes.length
     engine.voice.tone(TONE)
     expect(nodes.length).toBe(before)
     engine.setEnabled(true)
     expect(engine.active).toBe(true)
+    expect(engine.running).toBe(true)
     engine.voice.tone(TONE)
     expect(nodes.length).toBeGreaterThan(before)
   })
 
-  it('unlocks once and reports failure when Web Audio is missing', () => {
+  it('unlocks once and reports failure when Web Audio is missing', async () => {
     let made = 0
     const engine = createAudioEngine({
       createContext: () => {
@@ -101,16 +116,56 @@ describe('audio engine', () => {
         return fakeContext().ctx
       },
     })
-    engine.unlock()
-    engine.unlock()
+    await engine.unlock()
+    await engine.unlock()
     expect(made).toBe(1)
     const broken = createAudioEngine({
       createContext: () => {
         throw new Error('no audio')
       },
     })
-    expect(broken.unlock()).toBe(false)
+    expect(await broken.unlock()).toBe(false)
     expect(broken.unlocked).toBe(false)
+  })
+
+  it('resolves unlock only once the context is running', async () => {
+    let allowed = false
+    const { ctx, raw } = fakeContext({
+      resume: async () => {
+        if (!allowed) await new Promise(() => {}) // a refused gesture never resolves
+        raw.state = 'running'
+      },
+    })
+    const engine = createAudioEngine({ createContext: () => ctx })
+    let resolved = false
+    const first = engine.unlock().then((ok) => (resolved = ok))
+    await Promise.resolve()
+    expect(resolved).toBe(false) // still waiting: the browser has not run the context
+    expect(engine.unlocked).toBe(true)
+    expect(engine.running).toBe(false)
+    void first
+    // A later, accepted gesture resumes it.
+    allowed = true
+    raw.state = 'running'
+    expect(await engine.unlock()).toBe(true)
+    expect(engine.running).toBe(true)
+  })
+
+  it('returns false from unlock when resume rejects, and stays silent while suspended', async () => {
+    const { ctx, nodes } = fakeContext({
+      resume: async () => {
+        throw new Error('interrupted')
+      },
+    })
+    const engine = createAudioEngine({ createContext: () => ctx })
+    expect(await engine.unlock()).toBe(false)
+    expect(engine.running).toBe(false)
+    // Even enabled, a suspended context schedules no notes: no burst when it wakes.
+    engine.setEnabled(true)
+    const before = nodes.length
+    engine.voice.tone(TONE)
+    expect(nodes.length).toBe(before)
+    expect(engine.active).toBe(false)
   })
 })
 

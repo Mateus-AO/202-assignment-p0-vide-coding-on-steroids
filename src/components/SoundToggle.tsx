@@ -7,7 +7,7 @@ export function SoundToggle({ on, onToggle }: Props) {
       type="button"
       data-sound-toggle
       aria-pressed={on}
-      aria-label={on ? 'Turn sound off' : 'Turn sound on'}
+      aria-label="Sound"
       title={on ? 'Sound on' : 'Sound off'}
       onClick={onToggle}
       className="pixel-button fixed right-3 top-3 z-20 flex items-center gap-2 sm:right-5 sm:top-5"

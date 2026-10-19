@@ -10,14 +10,18 @@ const SUSPEND_AFTER_MS = 500
 export type AudioEngine = {
   /**
    * Creates (or resumes) the AudioContext. Browsers only allow this inside a click, tap or key
-   * handler. Returns false if the browser has no Web Audio.
+   * handler. Resolves true once the context is `running` — it stays pending while the browser
+   * keeps refusing `resume`, so callers can wait for it or simply try again on the next gesture.
+   * False if the browser has no Web Audio.
    */
-  unlock: () => boolean
+  unlock: () => Promise<boolean>
   /** True once `unlock` has created a context. */
   readonly unlocked: boolean
+  /** The context exists and is `running`: output is heard. */
+  readonly running: boolean
   /** Fades all output in or out. Off by default. */
   setEnabled: (on: boolean) => void
-  /** Unlocked and enabled: cues will be heard. */
+  /** Enabled and running: cues will be heard. */
   readonly active: boolean
   /** Plays short notes and bursts. Does nothing (allocates nothing) while not active. */
   readonly voice: Voice
@@ -78,7 +82,9 @@ export function createAudioEngine({
   let enabled = false
   let suspendTimer: ReturnType<typeof setTimeout> | undefined
 
-  const live = () => (enabled ? graph : null)
+  // Only a running context may schedule notes: a suspended one has a frozen clock, so cues
+  // fired while it sleeps would all land at the same start and burst when it wakes.
+  const live = () => (enabled && graph && graph.ctx.state === 'running' ? graph : null)
 
   const voice: Voice = {
     tone: (spec) => {
@@ -92,17 +98,26 @@ export function createAudioEngine({
   }
 
   return {
-    unlock() {
+    async unlock() {
       try {
         graph ??= buildGraph(createContext(), peak)
       } catch {
         return false
       }
-      if (graph.ctx.state === 'suspended') void graph.ctx.resume().catch(() => {})
-      return true
+      if (graph.ctx.state === 'suspended') {
+        try {
+          await graph.ctx.resume()
+        } catch {
+          return false
+        }
+      }
+      return graph.ctx.state === 'running'
     },
     get unlocked() {
       return graph !== null
+    },
+    get running() {
+      return graph?.ctx.state === 'running'
     },
     setEnabled(on) {
       enabled = on
@@ -118,7 +133,7 @@ export function createAudioEngine({
       }
     },
     get active() {
-      return enabled && graph !== null
+      return enabled && graph?.ctx.state === 'running'
     },
     voice,
     createBed(spec, maxLayers) {
