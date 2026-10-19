@@ -5,7 +5,7 @@ React + TypeScript + Vite, React Three Fiber + drei (3D), Lenis + GSAP (scroll),
 
 ```
 src/
-  app/          shell: App, GlobalCanvas, WorldStack (portal + camera + cover), Captions,
+  app/          shell: App, GlobalCanvas, WorldStack (portal + camera + cover), Captions, Footer,
                 store (the current Frame), worlds.ts (order)
   core/         the page's own concepts: world contract (defineWorld), beats, timeline (frameAt)
   worlds/       one self-contained folder per world: world.ts, beats.ts, scene files
@@ -32,6 +32,12 @@ See `GLOSSARY.md` for the vocabulary (world, beat, timeline, frame, exit, cover)
 - **Loading screen and scroll lock.** The first world, `starter`, is a CRT with a fisheye shader of its own (no post-processing). `App` starts `useSmoothScroll` locked (`overflow: hidden` on the root, Lenis stopped, also under reduced motion) and the page starts at the top. `PlayGate` (`app/`) draws the Play button as a real DOM button over the canvas, placed by `playButtonSpot(aspect)`; it is disabled until `useStarterStore.booted`. The starter sets `booted` once its bar is full: the bar is the lesser of the real startup work that finished (`core/readiness.ts`: `fonts`, `shaders`, and `next-world`, which `PortalGate` marks after `compileAsync` of the next world) and the minimum boot time (`loading.ts`; a task that never reports counts as done after 12 s). Play unlocks the scroll and calls `scrollToProgress(progressPast(worlds, 0))`, a Lenis glide (an instant jump in reduced motion, to the first step past the starter), so the fly-in is ordinary scroll and scrubs both ways. Scrolling back up shows the screen as READY. Play does not start sound. Dev: `?boot=6` stretches the minimum boot time; a pinned `?progress=` skips the lock and the loading screen.
 - Each world names its timing once in `beats.ts` (`defineBeats`). Scene files, the camera and the exit all read the same beats, and scene files never import `world.ts`, so there are no cycles.
 - The quality tier is detected once in `App` and passed to every scene as a prop. No module reads the browser at import time, so tests need no fake `window`.
+
+## Footer and the scroll end
+
+- `Footer` (`app/Footer.tsx`, copy in `app/footerContent.ts`) is a DOM `<footer>` after the scroll spacer. It has a solid black background and sits at z 15: above the captions (10), below the sound toggle and Play (20), so it slides over the fixed canvas. It is `inert` until Play is pressed, so keyboard focus cannot scroll past the loading screen. Its Back to top button calls `scroll.scrollToTop()`, an instant jump (Lenis `immediate`, or `window.scrollTo` in plain scroll).
+- **The footer must not change the worlds' progress.** Progress is `progressAtScroll(scrollY, end)` (`utils/scroll/progress.ts`, pure, tested) where `end = scrollEnd(spacerBottom, innerHeight)`: the scroll offset at which the spacer's bottom meets the viewport's bottom. `App` passes that as the `scrollEnd` option of `useSmoothScroll`; the hook uses the same end for `scrollToProgress` (so Play's glide lands where it always did) and recomputes on resize. Progress is clamped, so it stays at 1 for the whole footer, in Lenis mode and in the plain-scroll path of reduced motion. Without the option the end is the bottom of the page. A pinned `?progress=` sets the frame directly and is unaffected.
+- Spacer height and `scrollEnd` are the only things that map scroll to progress; the footer's height does not enter it.
 
 ## Two kinds of exit
 

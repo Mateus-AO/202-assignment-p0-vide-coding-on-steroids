@@ -25,3 +25,5 @@
 **Quality tier**: `low` or `high`, detected once at startup and passed to every world.
 
 **Boot / Play gate**: the first world (`starter`) is a CRT loading screen. Its bar follows real startup work (**readiness**: fonts, its own shaders, the next world compiled) and a minimum boot time; the DOM Play button enables when both are done. The page scroll is **locked** until Play is pressed; Play glides to the end of the starter, which is the fly-in.
+
+**Scroll end**: the scroll offset where overall progress reaches 1: the bottom of the scroll spacer lined up with the bottom of the viewport. Content after the spacer is the **footer** (`app/Footer.tsx`), which scrolls into view with progress held at 1.
