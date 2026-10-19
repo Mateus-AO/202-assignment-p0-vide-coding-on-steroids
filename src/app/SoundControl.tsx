@@ -4,6 +4,7 @@ import { createAudioEngine, getStorage, readFlag, writeFlag } from '@/utils/audi
 import { usePrefersReducedMotion } from '@/utils/hooks/usePrefersReducedMotion'
 import type { QualityTier } from '@/utils/three/quality'
 import { createSoundDirector } from './soundDirector'
+import { startOnceRunning } from './soundStart'
 import { getFrame, useAppStore } from './store'
 
 const STORAGE_KEY = 'p0-landing:sound'
@@ -26,21 +27,31 @@ export function SoundControl({ quality }: { quality: QualityTier }) {
   )
 
   useEffect(() => {
+    let cancelled = false
+    // True only once the context is running; a stale start that resolves after sound was
+    // turned off is dropped, so it cannot un-mute the toggle.
+    const start = () =>
+      startOnceRunning(
+        engine,
+        () => cancelled,
+        () => {
+          director.reset(getFrame())
+          director.update(getFrame(), reduced)
+        },
+      )
     if (!on) {
       engine.setEnabled(false)
-      return
+      return () => {
+        cancelled = true
+      }
     }
-    // True only once the context is running; unlock() stays pending while the browser refuses.
-    const start = async () => {
-      if (!(await engine.unlock())) return false
-      engine.setEnabled(true)
-      director.reset(getFrame())
-      director.update(getFrame(), reduced)
-      return engine.running
-    }
-    if (engine.unlocked) {
+    // Already running: nothing else is needed. Unlocked but suspended also gets the listeners,
+    // so a refused resume can be retried on the next gesture.
+    if (engine.running) {
       void start()
-      return
+      return () => {
+        cancelled = true
+      }
     }
     const onGesture = (e: Event) => {
       // The toggle handles its own clicks.
@@ -50,7 +61,10 @@ export function SoundControl({ quality }: { quality: QualityTier }) {
     }
     const remove = () => GESTURES.forEach((g) => window.removeEventListener(g, onGesture))
     GESTURES.forEach((g) => window.addEventListener(g, onGesture))
-    return remove
+    return () => {
+      cancelled = true
+      remove()
+    }
   }, [on, engine, director, reduced])
 
   const toggle = () => {
