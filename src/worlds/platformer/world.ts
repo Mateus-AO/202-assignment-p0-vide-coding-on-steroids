@@ -1,6 +1,7 @@
 import { defineWorld } from '@/core/world'
 import { lerp, smoothstep } from '@/utils/math'
 import { beats } from './beats'
+import { captions } from './captions'
 import { CASTLE_X, DOOR_TOP, DOOR_Z } from './config'
 import { heroX, heroY } from './hero'
 import { Platformer } from './Platformer'
@@ -57,12 +58,5 @@ export const platformer = defineWorld({
     revealLength: 0.1,
   },
   sound,
-  captions: [
-    { from: 0.15, to: 0.45, text: 'A plumber, a flat world, a thousand remixes.' },
-    {
-      from: 0.45,
-      to: 0.75,
-      text: 'Every world you crossed can be taken apart like this.',
-    },
-  ],
+  captions,
 })

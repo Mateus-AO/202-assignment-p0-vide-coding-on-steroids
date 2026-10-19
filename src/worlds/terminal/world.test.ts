@@ -100,11 +100,11 @@ describe('terminal shutdown', () => {
     }
   })
 
-  it('places the captions at the same story moments, and ends them with the story', () => {
+  it('places the captions in story time, and ends them with the story', () => {
     const [first, second] = terminal.captions
-    expect(first.from).toBeCloseTo(0.12 * STORY_END)
-    expect(first.to).toBeCloseTo(0.34 * STORY_END)
-    expect(second.from).toBeCloseTo(0.74 * STORY_END)
+    expect(first.from).toBeCloseTo(0.1 * STORY_END)
+    expect(first.to).toBeCloseTo(0.4 * STORY_END)
+    expect(second.from).toBeCloseTo(0.7 * STORY_END)
     expect(second.to).toBeCloseTo(STORY_END)
   })
 })

@@ -1,6 +1,7 @@
 import { defineWorld } from '@/core/world'
 import { easeInOutCubic, lerp } from '@/utils/math'
 import { beats } from './beats'
+import { captions } from './captions'
 import { BLOCK_POS } from './court'
 import { Pong } from './Pong'
 import { sound } from './sound'
@@ -25,13 +26,5 @@ export const pong = defineWorld({
     blendRange: [...beats.ranges.blend],
   },
   sound,
-  captions: [
-    { from: 0, to: 0.4, text: '1972. Pong. One ball, two paddles, no crossovers.' },
-    {
-      from: 0.4,
-      to: 0.6,
-      text: 'Every game is rules plus assets. Rules can be pulled apart.',
-    },
-    { from: 0.6, to: 1, text: '…and the next world was already running behind it.' },
-  ],
+  captions,
 })
