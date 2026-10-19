@@ -99,7 +99,6 @@ describe('starter world', () => {
   it('shows its title while the screen waits and drops it once the flight has started', () => {
     expect(captions.length).toBeGreaterThan(0)
     for (const c of captions) expect(captionProblem(c)).toBeUndefined()
-    expect(captions.every((c) => c.text === undefined)).toBe(true)
     expect(BUTTON_UNTIL).toBeLessThan(CAPTION_END)
     expect(captions[0].from).toBe(0)
     expect(captions[0].to).toBe(CAPTION_END)

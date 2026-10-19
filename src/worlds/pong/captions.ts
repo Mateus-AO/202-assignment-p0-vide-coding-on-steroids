@@ -6,13 +6,12 @@ import type { Caption } from '@/core/caption'
  *   part of the range and then stays until `to`. Give long copy a long range.
  * - Fields (all optional, at least one): kicker, headline, body, stats (up to 4 label/value
  *   pairs; a leading number counts up), footnote, link. Keep every fact checkable.
- * - `settled: true` skips the reveal (only the page's first caption, so it never loads blank).
+ * - `settled: true` skips the reveal (only the page's first caption, in the starter world).
  */
 export const captions: Caption[] = [
   {
     from: 0,
     to: 0.42,
-    settled: true,
     kicker: 'WORLD 01 · 1972',
     headline: 'Pong',
     body: 'One ball, two paddles, no crossovers.',

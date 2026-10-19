@@ -7,10 +7,11 @@ export const captions: Caption[] = [
   {
     from: 0,
     to: CAPTION_END,
+    // The page's first caption: shown complete on load, so it never opens blank.
+    settled: true,
     kicker: 'SIGNAL 00 / BOOT',
     headline: 'P0 CROSSOVER RIG',
     body: 'How crossover games get built: pull the rules apart, keep the feel.',
-    footnote: 'Press PLAY to start. Sound stays off until you turn it on.',
   },
 ]
 
