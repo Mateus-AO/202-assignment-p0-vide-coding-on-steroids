@@ -1,8 +1,9 @@
 import { defineWorld } from '@/core/world'
 import { easeInOutCubic, lerp } from '@/utils/math'
 import { HALF_FOV_TAN, SCREEN_H, SCREEN_W } from './layout'
-import { SHUTDOWN, STORY_END, storyToU, uToStory } from './beats'
+import { SHUTDOWN, STORY_END, uToStory } from './beats'
 import { sound } from './sound'
+import { captions } from './captions'
 import { Terminal } from './Terminal'
 
 /** How much of the view the panel may fill at most, vertically and horizontally. */
@@ -42,17 +43,5 @@ export const terminal = defineWorld({
     revealLength: 0.04,
   },
   sound,
-  // Written in story time, placed on the world's progress.
-  captions: [
-    {
-      from: storyToU(0.12),
-      to: storyToU(0.34),
-      text: 'Under every game is a pile of numbers someone chose.',
-    },
-    {
-      from: storyToU(0.74),
-      to: storyToU(1),
-      text: 'Recover the numbers and you can rebuild the feel.',
-    },
-  ],
+  captions,
 })

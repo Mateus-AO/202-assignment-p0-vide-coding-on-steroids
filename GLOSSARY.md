@@ -18,4 +18,8 @@
 
 **Scroll weight**: a world's share of the page's scroll relative to the others (`scrollWeight`, default 1). The terminal is longer so its story keeps its scroll distance while a shutdown plays at its end.
 
+**Caption**: the text box a world shows over a range of its progress. Fields: `kicker` (small line above), `headline`, `body`, `stats` (up to four label/value pairs), `footnote`, `link`. Copy lives in the world's `captions.ts`.
+
+**Reveal**: how a caption is written: a scramble that resolves into the text, with a cursor, driven by the world's progress (so it scrubs both ways). Stats count up. Pure logic in `core/reveal.ts`.
+
 **Quality tier**: `low` or `high`, detected once at startup and passed to every world.

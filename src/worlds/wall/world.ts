@@ -1,6 +1,7 @@
 import { defineWorld } from '@/core/world'
 import { easeInOutCubic, lerp, smoothstep } from '@/utils/math'
 import { sound } from './sound'
+import { captions } from './captions'
 import { Wall } from './Wall'
 
 /** Half the vertical field of view as a tangent (the canvas uses fov 50). */
@@ -52,16 +53,5 @@ export const wall = defineWorld({
   Scene: Wall,
   cameraPath: wallCamera,
   sound,
-  captions: [
-    {
-      from: 0.27,
-      to: 0.53,
-      text: 'One decomp rebuilds one game. An agent can read many.',
-    },
-    {
-      from: 0.82,
-      to: 1,
-      text: 'Give an agent the right tools and it can read what nobody documented.',
-    },
-  ],
+  captions,
 })

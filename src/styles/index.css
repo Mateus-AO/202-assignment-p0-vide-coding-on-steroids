@@ -7,6 +7,7 @@
   --color-accent: #7c5cff;
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-pixel: 'Press Start 2P', monospace;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 /* Caption box: change the look here, nothing else needs touching. */
@@ -21,6 +22,27 @@
   --caption-font-size: 16px;
   --caption-line-height: 24px;
   --caption-max-width: 720px;
+  --caption-muted: #a8a8c0;
+  /* Stats row and footnote: a small, legible monospace face instead of the pixel font. */
+  --caption-small-size: 12px;
+  --caption-small-line: 18px;
+}
+
+/* Wide screens: a wider box keeps the body on fewer lines and so the box short. */
+@media (min-width: 1024px) {
+  :root {
+    --caption-max-width: 960px;
+    --caption-padding: 18px 24px;
+  }
+}
+
+/* Phones: the pixel font steps down so the box stays short and the scene stays in view. */
+@media (max-width: 480px) {
+  :root {
+    --caption-font-size: 12px;
+    --caption-line-height: 20px;
+    --caption-padding: 16px;
+  }
 }
 
 @layer base {
@@ -84,5 +106,110 @@
     text-decoration: underline;
     text-underline-offset: 6px;
     text-decoration-thickness: 4px;
+  }
+
+  /* Caption contents. The reveal writes into these spans; see core/reveal.ts. */
+  .caption-box {
+    overflow-wrap: anywhere;
+  }
+  .caption-box > div > * + * {
+    margin-top: 8px;
+  }
+  .caption-kicker {
+    font-size: 10px;
+    line-height: 16px;
+    color: var(--caption-muted);
+  }
+  .caption-headline {
+    color: var(--caption-accent);
+  }
+  .caption-rest {
+    visibility: hidden;
+  }
+  /* Block cursor over the next character. 1.2 s per cycle: under one blink a second. */
+  .caption-cursor {
+    background: var(--caption-fg);
+    color: transparent;
+    animation: caption-blink 1.2s steps(1, end) infinite;
+  }
+  @keyframes caption-blink {
+    50% {
+      background: transparent;
+    }
+  }
+  .caption-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+    gap: 10px 16px;
+    margin-bottom: 0;
+    padding-top: 10px;
+    border-top: 2px dashed var(--caption-muted);
+    font-family: var(--font-mono);
+    -webkit-font-smoothing: auto;
+  }
+  .caption-stat dt {
+    font-size: 10px;
+    line-height: 14px;
+    letter-spacing: 0.08em;
+    color: var(--caption-muted);
+  }
+  .caption-stat dd {
+    margin: 0;
+    font-size: 15px;
+    line-height: 22px;
+    font-weight: 700;
+    color: var(--caption-fg);
+  }
+  .caption-footnote {
+    font-family: var(--font-mono);
+    font-size: var(--caption-small-size);
+    line-height: var(--caption-small-line);
+    color: var(--caption-muted);
+    -webkit-font-smoothing: auto;
+  }
+  /* Stats slots: the final text reserves the size, the live text is written over it. */
+  .caption-slot {
+    position: relative;
+    display: block;
+  }
+  .caption-ghost {
+    visibility: hidden;
+  }
+  .caption-live {
+    position: absolute;
+    inset: 0;
+  }
+  .caption-link {
+    display: inline-block;
+    margin-top: 16px;
+  }
+  .caption-link:not([data-ready]) {
+    visibility: hidden;
+  }
+  /* Reduced motion: the final text, with a plain fade. */
+  .caption-fade {
+    animation: caption-fade 0.4s ease-out both;
+  }
+  @keyframes caption-fade {
+    from {
+      opacity: 0;
+    }
+  }
+  /* Wide screens: the stats become one line (label, value) so the scene stays in view. */
+  @media (min-width: 1024px) {
+    .caption-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 28px;
+    }
+    .caption-stat {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .caption-stat dd {
+      font-size: 14px;
+      line-height: 20px;
+    }
   }
 }

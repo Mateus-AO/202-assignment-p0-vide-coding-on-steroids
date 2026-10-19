@@ -21,19 +21,22 @@ export type Caption = {
   stats?: CaptionStat[]
   footnote?: string
   link?: { href: string; label: string }
-  /** @deprecated Old single-line form. Use `body`. Removed once every world is migrated. */
-  text?: string
+  /**
+   * Shown complete from `from`, with no reveal. For the page's opening caption, so the page
+   * never loads blank.
+   */
+  settled?: boolean
 }
 
 /** The text a caption is known by in errors and as a React key. */
 export function captionLabel(c: Caption): string {
-  return c.headline ?? c.body ?? c.text ?? c.kicker ?? c.footnote ?? `${c.from}-${c.to}`
+  return c.headline ?? c.body ?? c.kicker ?? c.footnote ?? `${c.from}-${c.to}`
 }
 
 /** Returns a problem description, or undefined when the caption is well-formed. */
 export function captionProblem(c: Caption): string | undefined {
   if (!(c.from >= 0 && c.from < c.to && c.to <= 1)) return 'bad caption range'
-  if (!(c.kicker || c.headline || c.body || c.text || c.footnote || c.stats?.length))
+  if (!(c.kicker || c.headline || c.body || c.footnote || c.stats?.length))
     return 'caption has no content'
   if (c.stats && c.stats.length > MAX_CAPTION_STATS)
     return `more than ${MAX_CAPTION_STATS} stats`
