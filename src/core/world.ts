@@ -43,7 +43,12 @@ export type CoverExit = {
   whiteFrom: number
   whiteFull: number
   revealLength: number
-  /** `mosaic` (default): white, then broken squares. `black`: a plain fade through black. */
+  /**
+   * `mosaic` (default): white, then broken squares. `black`: a plain fade through black.
+   * `crt`: a TV shutting down (bars close to a line, the line shrinks to a dot, the dot fades);
+   * `whiteFrom`..`whiteFull` is its window, timed linearly. On the other side it stays black,
+   * then fades out.
+   */
   style?: CoverStyle
 }
 

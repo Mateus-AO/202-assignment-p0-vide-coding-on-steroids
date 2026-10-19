@@ -98,6 +98,26 @@ describe('frameAt', () => {
       expect(frameAt(dark, 0.5).cover).toEqual({ mode: 2, t: 0, style: 'black' })
       expect(frameAt(worlds, 2 / 3).cover).not.toHaveProperty('style')
     })
+    it('carries the crt style through both phases, with a linear phase', () => {
+      const tv = [
+        world('a', {
+          kind: 'cover',
+          whiteFrom: 0.8,
+          whiteFull: 1,
+          revealLength: 0.1,
+          style: 'crt',
+        }),
+        world('b'),
+      ]
+      expect(frameAt(tv, 0.4 - 1e-9).cover).toEqual({ mode: 0, t: 0 })
+      const mid = frameAt(tv, 0.45 - 1e-9).cover
+      expect(mid).toMatchObject({ mode: 1, style: 'crt' })
+      // Halfway through the window, not the eased 0.5 of a smoothstep (which is also 0.5):
+      // check a quarter, where a smoothstep would give 0.156.
+      expect(frameAt(tv, 0.425).cover.t).toBeCloseTo(0.25)
+      expect(frameAt(tv, 0.5 - 1e-9).cover.t).toBeCloseTo(1)
+      expect(frameAt(tv, 0.5).cover).toEqual({ mode: 2, t: 0, style: 'crt' })
+    })
   })
 
   it('snaps progress in reduced-motion mode', () => {

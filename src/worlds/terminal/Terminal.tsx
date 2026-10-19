@@ -8,7 +8,7 @@ import { usePointer } from '@/utils/hooks/usePointer'
 import { damp } from '@/utils/math'
 import { mulberry32 } from '@/utils/math/random'
 import { useSceneAtmosphere } from '@/utils/three/useSceneAtmosphere'
-import { beats } from './beats'
+import { beats, uToStory } from './beats'
 import {
   ATLAS_COLS,
   ATLAS_ROWS,
@@ -153,7 +153,8 @@ export function Terminal({ getU, quality }: WorldProps) {
 
   /* eslint-disable react-hooks/immutability -- three.js textures and uniforms are mutable by design */
   useFrame(({ clock }, delta) => {
-    const u = getU()
+    // Everything below runs in story time; after STORY_END the final frame holds for the shutdown.
+    const u = uToStory(getU())
     renderScreen(u, screen.data)
     screen.texture.needsUpdate = true
     // Through the material, so the values land on the uniforms the renderer actually uploads.
