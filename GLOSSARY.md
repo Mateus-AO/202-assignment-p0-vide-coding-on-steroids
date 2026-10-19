@@ -14,7 +14,7 @@
 
 **Handoff**: the moment the active world changes. Must look seamless.
 
-**Cover**: the full-screen overlay (`ScreenMosaic`): white spreads over the screen, then clears outward from the center into a large cluster of see-through squares where the world underneath shows. A cover with `style: 'black'` is instead a plain fade through black, and `style: 'crt'` is a TV shutting down (bars close to a line, the line to a dot, then black).
+**Cover**: the full-screen overlay (`ScreenMosaic`): white spreads over the screen, then clears outward from the center into a large cluster of see-through squares where the world underneath shows. A cover with `style: 'black'` is instead a plain fade through black, and `style: 'crt'` is a TV shutting down (bars close to a line, the line to a dot, then black), and `style: 'glitch'` tears the picture and cuts to the next world.
 
 **Scroll weight**: a world's share of the page's scroll relative to the others (`scrollWeight`, default 1). The terminal is longer so its story keeps its scroll distance while a shutdown plays at its end.
 
@@ -25,3 +25,5 @@
 **Quality tier**: `low` or `high`, detected once at startup and passed to every world.
 
 **Boot / Play gate**: the first world (`starter`) is a CRT loading screen. Its bar follows real startup work (**readiness**: fonts, its own shaders, the next world compiled) and a minimum boot time; the DOM Play button enables when both are done. The page scroll is **locked** until Play is pressed; Play glides to the end of the starter, which is the fly-in.
+
+**Tableau**: the calm final pose of the arena's cast during the `title` beat, standing inside the merge ring.
