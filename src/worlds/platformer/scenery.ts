@@ -1,5 +1,5 @@
 import type { Cell } from '@/utils/three/InstancedBlocks'
-import { CASTLE_X, PIPES, QUESTION_X, RUN_DISTANCE } from './config'
+import { CASTLE_X, PIPES, RUN_DISTANCE } from './config'
 
 export const X_MIN = -12
 export const X_MAX = RUN_DISTANCE + 30
@@ -66,9 +66,6 @@ export function createScenery() {
     ]),
     clouds: [-4, 8, 22, 36, 50, 64, 78].flatMap((x, i) => cloud(x, 9 + (i % 3), -9)),
     cloudsFar: [2, 16, 31, 44, 58, 72].flatMap((x, i) => cloud(x, 12 + (i % 2) * 2, -15)),
-    bricks: [...range(18, 22), ...range(44, 46)]
-      .map((x): Cell => [x, 4.5, 0])
-      .filter(([x]) => x !== QUESTION_X),
     castle: castle(),
     pipes: PIPES,
   }

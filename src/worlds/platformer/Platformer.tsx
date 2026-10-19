@@ -21,7 +21,6 @@ export function Platformer({ getU }: Pick<WorldProps, 'getU'>) {
       <InstancedBlocks cells={scenery.hills} material={materials.hill} tint={0.12} />
       <InstancedBlocks cells={scenery.bushes} material={materials.bush} tint={0.15} />
       <InstancedBlocks cells={scenery.ground} material={materials.brick} tint={0.15} />
-      <InstancedBlocks cells={scenery.bricks} material={materials.brick} />
       <InstancedBlocks cells={scenery.castle} material={materials.castle} tint={0.08} />
 
       {scenery.pipes.map((x) => (
