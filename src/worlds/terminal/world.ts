@@ -1,7 +1,7 @@
 import { defineWorld } from '@/core/world'
 import { easeInOutCubic, lerp } from '@/utils/math'
 import { HALF_FOV_TAN, SCREEN_H, SCREEN_W } from './layout'
-import { SHUTDOWN } from './beats'
+import { SHUTDOWN, STORY_END, storyToU, uToStory } from './beats'
 import { sound } from './sound'
 import { Terminal } from './Terminal'
 
@@ -30,22 +30,29 @@ export function terminalCamera(u: number, aspect: number) {
 export const terminal = defineWorld({
   id: 'terminal',
   Scene: Terminal,
-  cameraPath: terminalCamera,
-  // Placeholder fade into the wall; the shutdown agent replaces it with the CRT cover.
+  cameraPath: (u, aspect) => terminalCamera(uToStory(u), aspect),
+  // The story keeps the scroll distance it always had; the shutdown is added on top.
+  scrollWeight: 1 / STORY_END,
+  // The set switches off over the last tenth; the wall starts with a black hold.
   exit: {
     kind: 'cover',
-    style: 'black',
+    style: 'crt',
     whiteFrom: SHUTDOWN[0],
     whiteFull: SHUTDOWN[1],
-    revealLength: 0.02,
+    revealLength: 0.04,
   },
   sound,
+  // Written in story time, placed on the world's progress.
   captions: [
     {
-      from: 0.12,
-      to: 0.34,
+      from: storyToU(0.12),
+      to: storyToU(0.34),
       text: 'Under every game is a pile of numbers someone chose.',
     },
-    { from: 0.74, to: 1, text: 'Recover the numbers and you can rebuild the feel.' },
+    {
+      from: storyToU(0.74),
+      to: storyToU(1),
+      text: 'Recover the numbers and you can rebuild the feel.',
+    },
   ],
 })
