@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react'
 import type { Vec3 } from '@/utils/math/types'
 import type { QualityTier } from '@/utils/three/quality'
+import type { CoverStyle } from '@/utils/transitions/ScreenMosaic'
 import type { WorldSound } from './sound'
 
 export type CameraPose = { position: Vec3; target: Vec3 }
@@ -38,9 +39,12 @@ export type PortalExit = {
  */
 export type CoverExit = {
   kind: 'cover'
+  /** The cover is white by default; with `style: 'black'` read these as the black fade. */
   whiteFrom: number
   whiteFull: number
   revealLength: number
+  /** `mosaic` (default): white, then broken squares. `black`: a plain fade through black. */
+  style?: CoverStyle
 }
 
 export type WorldExit = PortalExit | CoverExit

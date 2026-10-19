@@ -1,5 +1,5 @@
 import { clamp, smoothstep } from '@/utils/math'
-import type { CoverPhase } from '@/utils/transitions/ScreenMosaic'
+import type { CoverPhase, CoverStyle } from '@/utils/transitions/ScreenMosaic'
 import type { Caption, CameraPose, WorldModule } from './world'
 
 /** In reduced-motion mode scroll still moves the story, but in this many fixed steps per world. */
@@ -21,6 +21,10 @@ export type Frame = {
 }
 
 const COVER_OFF: CoverPhase = { mode: 0, t: 0 }
+
+/** A cover phase; the default `mosaic` style is left out so those frames stay as they were. */
+const coverPhase = (mode: 1 | 2, t: number, style?: CoverStyle): CoverPhase =>
+  style === 'black' ? { mode, t, style } : { mode, t }
 
 /** Splits overall progress into the active world and its local progress. */
 function split(progress: number, count: number) {
@@ -45,11 +49,11 @@ export function frameAt(
   let cover = COVER_OFF
   if (exit?.kind === 'cover') {
     const t = smoothstep(exit.whiteFrom, exit.whiteFull, u)
-    if (t > 0) cover = { mode: 1, t }
+    if (t > 0) cover = coverPhase(1, t, exit.style)
   }
   const previous = worlds[index - 1]?.exit
   if (cover.mode === 0 && previous?.kind === 'cover' && u < previous.revealLength) {
-    cover = { mode: 2, t: u / previous.revealLength }
+    cover = coverPhase(2, u / previous.revealLength, previous.style)
   }
 
   return {

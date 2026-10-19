@@ -78,6 +78,21 @@ describe('frameAt', () => {
     it('clears after revealLength', () => {
       expect(frameAt(worlds, 2 / 3 + 0.5 / 3).cover.mode).toBe(0)
     })
+    it('carries the black style through both phases, and only when asked for', () => {
+      const dark = [
+        world('a', {
+          kind: 'cover',
+          whiteFrom: 0.8,
+          whiteFull: 0.9,
+          revealLength: 0.4,
+          style: 'black',
+        }),
+        world('b'),
+      ]
+      expect(frameAt(dark, 0.5 - 1e-9).cover).toMatchObject({ mode: 1, style: 'black' })
+      expect(frameAt(dark, 0.5).cover).toEqual({ mode: 2, t: 0, style: 'black' })
+      expect(frameAt(worlds, 2 / 3).cover).not.toHaveProperty('style')
+    })
   })
 
   it('snaps progress in reduced-motion mode', () => {

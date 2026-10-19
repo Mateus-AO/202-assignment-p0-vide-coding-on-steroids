@@ -2,11 +2,16 @@ import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Vector2, type Mesh, type ShaderMaterial } from 'three'
 
+/** `mosaic`: white, then broken squares. `black`: a plain fade through black. */
+export type CoverStyle = 'mosaic' | 'black'
+
 export type CoverPhase = {
   /** 0 = off, 1 = white covering the screen, 2 = white clearing into the mosaic. */
   mode: 0 | 1 | 2
   /** Progress through the current phase, [0, 1]. */
   t: number
+  /** Defaults to `mosaic`. With `black`, mode 1 fades to black and mode 2 fades back. */
+  style?: CoverStyle
 }
 
 type Props = {
@@ -96,7 +101,7 @@ export function ScreenMosaic({ getPhase, rows = 6, simple = false }: Props) {
     u.uCell.value = cssCell * gl.getPixelRatio()
     u.uMode.value = phase.mode
     u.uT.value = phase.t
-    u.uSimple.value = simple ? 1 : 0
+    u.uSimple.value = simple || phase.style === 'black' ? 1 : 0
   })
 
   return (
