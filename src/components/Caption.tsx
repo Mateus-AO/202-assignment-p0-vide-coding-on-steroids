@@ -11,7 +11,7 @@ export function Caption({ caption }: { caption: CaptionData }) {
   const shown = useRef<HTMLSpanElement>(null)
   const hidden = useRef<HTMLSpanElement>(null)
   const [done, setDone] = useState(reduced)
-  const { text } = caption
+  const text = caption.body ?? caption.text ?? ''
 
   // The not-yet-typed rest is rendered invisible, so the box never changes size while typing.
   useLayoutEffect(() => {

@@ -1,6 +1,6 @@
 # p0-landing
 
-A scroll-driven 3D landing page: one continuous camera move through game worlds (Pong → Minecraft-style voxel field → platformer). It tells how crossover games get built; the voxel world's caption links REA (https://github.com/morluto/rea), an AI tool that recovers mechanics from old binaries. There are no playable games. Stack: React, TypeScript, Vite, React Three Fiber + drei, GSAP + Lenis, Tailwind, Zustand, Vitest. Not a git repo (the owner chose that); make no commits.
+A scroll-driven 3D landing page: one continuous camera move through game worlds (Pong → Minecraft-style voxel field → platformer). It tells how crossover games get built; the voxel world's caption links REA (https://github.com/morluto/rea), an AI tool that recovers mechanics from old binaries. There are no playable games. Stack: React, TypeScript, Vite, React Three Fiber + drei, GSAP + Lenis, Tailwind, Zustand, Vitest. It is a git repo (remote `origin`, default branch `main`). Work on a `feat/<name>` branch (agents in a worktree under `.claude/worktrees/`), commit with conventional messages (`feat(scope):`, `fix:`, `docs:`, `chore:`), and merge to `main` with a merge commit. Merging to `main` and pushing need the owner's go-ahead.
 
 ## Where to look
 
