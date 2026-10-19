@@ -45,22 +45,21 @@ export function SoundControl({ quality }: { quality: QualityTier }) {
         cancelled = true
       }
     }
-    // Already running: nothing else is needed. Unlocked but suspended also gets the listeners,
-    // so a refused resume can be retried on the next gesture.
-    if (engine.running) {
-      void start()
-      return () => {
-        cancelled = true
-      }
-    }
     const onGesture = (e: Event) => {
       // The toggle handles its own clicks.
       if (e.target instanceof Element && e.target.closest('[data-sound-toggle]')) return
-      // Listeners come off only once the context is running; a refused gesture retries.
-      void start().then((started) => started && remove())
+      begin()
     }
     const remove = () => GESTURES.forEach((g) => window.removeEventListener(g, onGesture))
-    GESTURES.forEach((g) => window.addEventListener(g, onGesture))
+    // Listeners come off only once the context is running; a refused gesture retries.
+    const begin = () => void start().then((started) => started && remove())
+
+    // The toggle's own click has already created the context, but some browsers (Safari) keep
+    // it suspended for a moment: wait for it here instead of for another gesture. With a
+    // remembered "on" and no gesture yet there is no context, and nothing is created until the
+    // first click, tap or key.
+    if (engine.unlocked) begin()
+    if (!engine.running) GESTURES.forEach((g) => window.addEventListener(g, onGesture))
     return () => {
       cancelled = true
       remove()
