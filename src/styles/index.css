@@ -213,3 +213,192 @@
     }
   }
 }
+
+/*
+ * Giant title over the arena (app/MergeTitle.tsx, app/mergeTitle/). A fixed block at the top
+ * of the viewport; its box never changes between looks, only colours, border style and face.
+ * The look (--mt-* colours, data-border, data-font) is written by the component from the
+ * caption themes; "merge" and the pull-request glyph stay --mt-merge in every look.
+ */
+.merge-title {
+  --mt-size: clamp(26px, min(5.2vw, 7.8vh), 84px);
+  --mt-sub: clamp(10px, 1.1vw, 14px);
+  --mt-surface: #14101f;
+  --mt-border: #f2e9c9;
+  --mt-text: #f2e9c9;
+  --mt-accent: #4ade80;
+  --mt-merge: #3fb950;
+  --mt-amount: 0;
+  --mt-shake: 0;
+  --mt-split: 1;
+  --mt-ct: 0%;
+  --mt-cb: 0%;
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 11;
+  box-sizing: border-box;
+  height: 36vh;
+  height: 36dvh;
+  padding: 12px 16px 0;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  -webkit-font-smoothing: none;
+  font-smooth: never;
+  /* Exact fractional advances, so the mono look's tracking matches the pixel face's 1em. */
+  text-rendering: geometricPrecision;
+}
+.merge-title[data-on] {
+  visibility: visible;
+}
+@media (max-width: 640px) {
+  .merge-title {
+    --mt-size: min(9.6vw, 4.4vh);
+    --mt-sub: 10px;
+    height: 38vh;
+    height: 38dvh;
+    padding: 8px 10px 0;
+  }
+}
+/* Short screens (small phones, phones on their side): smaller type so the box still fits. */
+@media (max-height: 600px) {
+  .merge-title {
+    --mt-sub: 8px;
+  }
+}
+@media (max-height: 560px) and (min-width: 641px) {
+  .merge-title {
+    --mt-size: 5.4vh;
+    --mt-sub: 8px;
+    height: 38vh;
+    padding: 8px 12px 0;
+  }
+  .mt-panel {
+    padding: 4px 14px;
+  }
+}
+.mt-panel {
+  box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: calc(var(--mt-size) * 0.3);
+  padding: 8px 18px;
+  overflow: hidden;
+  border: 6px solid var(--mt-border);
+  background: color-mix(in srgb, var(--mt-surface) 90%, transparent);
+  color: var(--mt-text);
+}
+.merge-title[data-border='double'] .mt-panel {
+  border-style: double;
+}
+.merge-title[data-border='dashed'] .mt-panel {
+  border-style: dashed;
+}
+.merge-title[data-border='none'] .mt-panel {
+  border-color: transparent;
+}
+.mt-stack {
+  position: relative;
+}
+.mt-layer-a,
+.mt-layer-b {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+}
+.mt-layer-a {
+  --mt-text: #ff2a6d;
+  --mt-merge: #ff2a6d;
+}
+.mt-layer-b {
+  --mt-text: #19e3ff;
+  --mt-merge: #19e3ff;
+}
+.mt-title {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-weight: 400;
+  font-size: var(--mt-size);
+  line-height: calc(var(--mt-size) * 1.3);
+  color: var(--mt-text);
+  text-wrap: balance;
+}
+/*
+ * The pixel face advances exactly 1em per character. The mono face is drawn 25% larger with
+ * wider tracking so it advances the same, and every line breaks in the same place in both.
+ */
+.merge-title[data-font='mono'] .mt-face {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.25em;
+  letter-spacing: 0.2em;
+  /* Its taller font metrics must not stretch the line box. */
+  vertical-align: top;
+}
+.mt-hid {
+  visibility: hidden;
+}
+.mt-merge {
+  color: var(--mt-merge);
+  white-space: nowrap;
+}
+.mt-glyph {
+  display: inline-block;
+  width: calc(var(--mt-size) * 0.95);
+  height: calc(var(--mt-size) * 0.95);
+  margin-left: calc(var(--mt-size) * 0.15);
+  vertical-align: calc(var(--mt-size) * -0.1);
+  opacity: 0;
+}
+.merge-title[data-glyph] .mt-glyph {
+  opacity: 1;
+}
+.mt-subtitle {
+  margin: 0;
+}
+.mt-sub {
+  display: inline-block;
+  pointer-events: auto;
+  color: var(--mt-accent);
+  font-family: var(--font-pixel);
+  font-size: var(--mt-sub);
+  line-height: calc(var(--mt-sub) * 1.7);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.35em;
+}
+.mt-sub:focus-visible {
+  outline: 3px solid var(--mt-text);
+  outline-offset: 2px;
+}
+/* The glitch (a short burst every ~2 s, never under reduced motion): colour split + a torn band. */
+.merge-title[data-glitch] .mt-layer-main {
+  transform: translateX(calc(var(--mt-shake) * var(--mt-amount) * var(--mt-size) * 0.1));
+}
+.merge-title[data-glitch] .mt-layer-main .mt-title {
+  text-shadow:
+    calc(var(--mt-split) * var(--mt-amount) * var(--mt-size) * -0.07) 0 0 #ff2a6d,
+    calc(var(--mt-split) * var(--mt-amount) * var(--mt-size) * 0.07) 0 0 #19e3ff;
+}
+.merge-title[data-glitch] .mt-layer-main .mt-glyph {
+  filter: drop-shadow(
+      calc(var(--mt-split) * var(--mt-amount) * var(--mt-size) * -0.07) 0 0 #ff2a6d
+    )
+    drop-shadow(
+      calc(var(--mt-split) * var(--mt-amount) * var(--mt-size) * 0.07) 0 0 #19e3ff
+    );
+}
+.merge-title[data-glitch][data-tear] .mt-layer-a,
+.merge-title[data-glitch][data-tear] .mt-layer-b {
+  visibility: visible;
+}
+.merge-title[data-glitch][data-tear] .mt-layer-a {
+  transform: translateX(calc(var(--mt-split) * var(--mt-amount) * var(--mt-size) * 0.35));
+  clip-path: inset(var(--mt-ct) 0 var(--mt-cb) 0);
+}
+.merge-title[data-glitch][data-tear] .mt-layer-b {
+  transform: translateX(calc(var(--mt-split) * var(--mt-amount) * var(--mt-size) * -0.3));
+  clip-path: inset(var(--mt-cb) 0 var(--mt-ct) 0);
+}

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { GlobalCanvas } from './GlobalCanvas'
 import { Captions } from './Captions'
+import { MergeTitle } from './MergeTitle'
 import { PlayGate } from './PlayGate'
 import { SoundControl } from './SoundControl'
 import { useAppStore } from './store'
@@ -46,6 +47,7 @@ export function App() {
     <>
       <GlobalCanvas quality={quality} />
       <Captions />
+      <MergeTitle />
       <PlayGate scroll={scroll} />
       <SoundControl quality={quality} />
       <div

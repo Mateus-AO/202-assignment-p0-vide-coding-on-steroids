@@ -25,3 +25,7 @@
 **Quality tier**: `low` or `high`, detected once at startup and passed to every world.
 
 **Boot / Play gate**: the first world (`starter`) is a CRT loading screen. Its bar follows real startup work (**readiness**: fonts, its own shaders, the next world compiled) and a minimum boot time; the DOM Play button enables when both are done. The page scroll is **locked** until Play is pressed; Play glides to the end of the starter, which is the fly-in.
+
+**Title**: the giant "You can merge anything" DOM overlay at the top of the screen over the arena (`app/MergeTitle.tsx`), with the REA link as its subtitle. Written by the scramble reveal over the arena's `title` beat.
+
+**Glitch cycle**: the title's clock-driven loop, a documented exception to scroll-driven scenes: every ~2 s the text glitches for ~220 ms and then holds the next world's look (`CAPTION_THEMES` order: pong, voxel, platformer, terminal, wall, arena). Pure in the title's own clock (`app/mergeTitle/glitch.ts`); off under reduced motion.
