@@ -11,8 +11,8 @@ import { mechanics } from './mechanics'
  * - The level's numbers come from the level itself (`config`, `mechanics`), so they cannot
  *   drift. Numbers about real machines are listed with their sources in
  *   docs/CAPTION-SOURCES.md; add a row there for every new one.
- * - The world's theme puts the box at the top, where the sky is: the hero and the ground are
- *   in the lower half of the picture.
+ * - The world's theme puts the box in the bottom-right corner on wide screens (the hero rides
+ *   left of centre there) and full width at the bottom on phones.
  */
 export const captions: Caption[] = [
   {

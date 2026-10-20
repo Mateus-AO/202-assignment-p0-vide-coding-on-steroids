@@ -192,10 +192,16 @@ export function MergeTitle({ source = arenaSource }: { source?: TitleSource }) {
         shownOn = on
         el.toggleAttribute('data-on', on)
         // Hidden: out of the tab order and the accessibility tree (CSS visibility).
-        if (!on) clock = 0
         if (!on) {
+          clock = 0
           last = -1
           stopLoop()
+          // Drop any glitch in progress: a jump away (Back to top) can hide the title mid-glitch,
+          // and its torn copies must not stay on screen.
+          g.active = false
+          setGlitch()
+          opacity = '0'
+          style.opacity = '0'
         } else startLoop()
       }
       if (!on) return

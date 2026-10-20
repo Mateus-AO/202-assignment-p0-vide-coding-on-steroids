@@ -65,10 +65,10 @@ describe('resolveCaptionTheme', () => {
 
 describe('resolveCaptionAnchor', () => {
   it('uses the caption anchor, else the theme anchor', () => {
-    const top = CAPTION_THEMES.platformer
+    const corner = CAPTION_THEMES.platformer
     const bottom = CAPTION_THEMES.pong
-    expect(resolveCaptionAnchor({}, top)).toBe('top')
-    expect(resolveCaptionAnchor({ anchor: 'bottom' }, top)).toBe('bottom')
+    expect(resolveCaptionAnchor({}, corner)).toBe('bottom-right')
+    expect(resolveCaptionAnchor({ anchor: 'bottom' }, corner)).toBe('bottom')
     expect(resolveCaptionAnchor({ anchor: 'top' }, bottom)).toBe('top')
     expect(resolveCaptionAnchor(undefined, bottom)).toBe('bottom')
   })
