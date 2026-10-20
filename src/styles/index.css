@@ -261,7 +261,7 @@
  * caption themes; "merge" and the pull-request glyph stay --mt-merge in every look.
  */
 .merge-title {
-  --mt-size: clamp(26px, min(5.2vw, 7.8vh), 84px);
+  --mt-size: clamp(26px, min(6.4vw, 9.6vh), 120px);
   --mt-sub: clamp(10px, 1.1vw, 14px);
   --mt-surface: #14101f;
   --mt-border: #f2e9c9;
