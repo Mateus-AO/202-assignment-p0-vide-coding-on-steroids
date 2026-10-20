@@ -14,6 +14,7 @@ A scroll-driven 3D landing page: one continuous camera move through game worlds 
 - Name every timed moment of a world once in its `beats.ts`; the scene, camera and exit read it. Scene files never import `world.ts`.
 - Draw everything in code with original art (textures, characters, sounds). No ripped or trademarked assets, no real game names or characters on the page. One exception, by the owner's decision: the wall world's picture is a hand-drawn pixel rendition of the Claude Code mascot, drawn from scratch in code with no copied files. It must not be reused elsewhere or imply endorsement; everything else still follows this rule.
 - Keep scenes scrubbable: position, animation and effects are pure functions of the world's progress `u`, read through `getU()` inside `useFrame`. Allocate nothing per frame; use instanced meshes.
+- One documented exception to scrubbable scenes: the arena's giant title (`app/MergeTitle.tsx`) runs a glitch cycle on the clock (every ~2 s, deterministic, paused when hidden, off under reduced motion). It is limited to that overlay; see `docs/ARCHITECTURE.md`.
 - Respect reduced motion and the quality tier (both reach every scene). Keep any flash at 2.5 pulses per second or fewer.
 - Design for phones: cameras take the aspect ratio and keep the subject in frame.
 - A new world gets `defineWorld`, tests for its pure logic, and an entry in `src/app/worlds.ts`.
