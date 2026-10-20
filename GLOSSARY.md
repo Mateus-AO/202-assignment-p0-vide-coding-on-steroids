@@ -29,3 +29,5 @@
 **Quality tier**: `low` or `high`, detected once at startup and passed to every world.
 
 **Boot / Play gate**: the first world (`starter`) is a CRT loading screen. Its bar follows real startup work (**readiness**: fonts, its own shaders, the next world compiled) and a minimum boot time; the DOM Play button enables when both are done. The page scroll is **locked** until Play is pressed; Play glides to the end of the starter, which is the fly-in.
+
+**Tableau**: the calm final pose of the arena's cast during the `title` beat, standing inside the merge ring.

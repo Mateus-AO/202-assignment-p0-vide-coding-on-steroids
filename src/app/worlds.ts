@@ -5,9 +5,10 @@ import voxel from '@/worlds/voxel'
 import platformer from '@/worlds/platformer'
 import terminal from '@/worlds/terminal'
 import wall from '@/worlds/wall'
+import arena from '@/worlds/arena'
 
 /** Page order. To add a world: create its folder, then add it here. */
-export const worlds = [starter, pong, voxel, platformer, terminal, wall]
+export const worlds = [starter, pong, voxel, platformer, terminal, wall, arena]
 
 validateHandoffs(worlds)
 

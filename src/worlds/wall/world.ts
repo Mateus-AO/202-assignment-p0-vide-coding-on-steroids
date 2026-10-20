@@ -52,6 +52,15 @@ export const wall = defineWorld({
   id: 'wall',
   Scene: Wall,
   cameraPath: wallCamera,
+  // The finished picture holds until 0.9, then the screen tears and cuts to the arena; the
+  // glitch is full by 0.985 and clears over the arena's first 12%.
+  exit: {
+    kind: 'cover',
+    style: 'glitch',
+    whiteFrom: 0.9,
+    whiteFull: 0.985,
+    revealLength: 0.12,
+  },
   sound,
   captions,
   theme: 'wall',
