@@ -3,6 +3,7 @@ import type { Vec3 } from '@/utils/math/types'
 import type { QualityTier } from '@/utils/three/quality'
 import type { CoverStyle } from '@/utils/transitions/ScreenMosaic'
 import type { WorldSound } from './sound'
+import type { CaptionThemeId } from './captionTheme'
 import { captionLabel, captionProblem, type Caption } from './caption'
 
 export type CameraPose = { position: Vec3; target: Vec3 }
@@ -61,6 +62,8 @@ export type WorldModule = {
   /** How the world hands over to the next one. Omit on the last world. */
   exit?: WorldExit
   captions: Caption[]
+  /** Default look of this world's caption boxes (see `captionTheme.ts`). */
+  theme?: CaptionThemeId
   /** This world's share of the page's scroll relative to the others (default 1). */
   scrollWeight?: number
   /** Ambient bed and cues, declared in the world's `sound.ts`. Optional: a world may be silent. */

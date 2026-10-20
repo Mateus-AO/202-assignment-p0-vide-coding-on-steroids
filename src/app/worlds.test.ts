@@ -55,4 +55,25 @@ describe('the real page', () => {
       style: 'black',
     })
   })
+
+  it('ends on the arena, which the wall reaches through a glitch cover', () => {
+    const last = worlds[worlds.length - 1]
+    expect(last.id).toBe('arena')
+    expect(last.exit).toBeUndefined()
+    const wall = worlds[worlds.length - 2]
+    expect(wall.id).toBe('wall')
+    expect(wall.exit).toMatchObject({ kind: 'cover', style: 'glitch' })
+    const boundary = scrollBoundary(worlds, worlds.length - 1)
+    expect(frameAt(worlds, boundary - 1e-9).cover).toMatchObject({
+      mode: 1,
+      style: 'glitch',
+    })
+    expect(frameAt(worlds, boundary).cover).toMatchObject({
+      mode: 2,
+      t: 0,
+      style: 'glitch',
+    })
+    expect(frameAt(worlds, 1).u).toBe(1)
+    expect(frameAt(worlds, 1).cover.mode).toBe(0)
+  })
 })

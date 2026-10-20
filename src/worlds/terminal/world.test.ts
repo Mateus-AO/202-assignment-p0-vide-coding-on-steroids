@@ -3,7 +3,8 @@ import { HALF_FOV_TAN, SCREEN_H, SCREEN_W } from './layout'
 import { MAX_TILT } from './tilt'
 import { frameAt, scrollBoundary } from '@/core/timeline'
 import type { WorldModule } from '@/core/world'
-import { SHUTDOWN, STORY_END, storyToU, uToStory } from './beats'
+import { resolveCaptionAnchor, resolveCaptionTheme } from '@/core/captionTheme'
+import { SHUTDOWN, STORY_END, beats, storyToU, uToStory } from './beats'
 import { terminal, terminalCamera } from './world'
 
 /** Phones in portrait up to a wide desktop. */
@@ -101,10 +102,20 @@ describe('terminal shutdown', () => {
   })
 
   it('places the captions in story time, and ends them with the story', () => {
-    const [first, second] = terminal.captions
+    const first = terminal.captions[0]
+    const last = terminal.captions[terminal.captions.length - 1]
     expect(first.from).toBeCloseTo(0.1 * STORY_END)
-    expect(first.to).toBeCloseTo(0.4 * STORY_END)
-    expect(second.from).toBeCloseTo(0.7 * STORY_END)
-    expect(second.to).toBeCloseTo(STORY_END)
+    expect(last.from).toBeCloseTo(0.7 * STORY_END)
+    expect(last.to).toBeCloseTo(STORY_END)
+    for (const c of terminal.captions) expect(c.to).toBeLessThanOrEqual(STORY_END + 1e-9)
+  })
+
+  it('keeps the recovered-mechanics table clear: captions over it sit at the top', () => {
+    const tableFrom = storyToU(beats.ranges.recover[0])
+    const over = terminal.captions.filter((c) => c.to > tableFrom)
+    expect(over.length).toBeGreaterThan(0)
+    for (const c of over) {
+      expect(resolveCaptionAnchor(c, resolveCaptionTheme(c, terminal.theme))).toBe('top')
+    }
   })
 })

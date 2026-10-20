@@ -27,4 +27,5 @@ export const pong = defineWorld({
   },
   sound,
   captions,
+  theme: 'pong',
 })
