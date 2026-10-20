@@ -58,4 +58,5 @@ export const platformer = defineWorld({
   },
   sound,
   captions,
+  theme: 'platformer',
 })

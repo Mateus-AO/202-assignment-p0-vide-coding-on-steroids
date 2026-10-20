@@ -54,4 +54,5 @@ export const wall = defineWorld({
   cameraPath: wallCamera,
   sound,
   captions,
+  theme: 'wall',
 })

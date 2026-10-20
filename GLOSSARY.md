@@ -20,7 +20,11 @@
 
 **Caption**: the text box a world shows over a range of its progress. Fields: `kicker` (small line above), `headline`, `body`, `stats` (up to four label/value pairs), `footnote`, `link`. Copy lives in the world's `captions.ts`.
 
-**Reveal**: how a caption is written: a scramble that resolves into the text, with a cursor, driven by the world's progress (so it scrubs both ways). Stats count up. Pure logic in `core/reveal.ts`.
+**Reveal**: how a caption is written, driven by the world's progress (so it scrubs both ways): a `scramble` that resolves into the text behind a cursor, a `typewriter` (left to right, no scramble) or a stepped `fade`. Stats count up. The effect belongs to the theme. Pure logic in `core/reveal.ts`.
+
+**Theme**: the look of a caption box: colours, border style, font (pixel or mono), anchor and reveal effect. One per world (`theme:` in `world.ts`), kept in the registry `CAPTION_THEMES` (`core/captionTheme.ts`); a caption may override it with its own `theme`. Resolution: caption, then world, then Pong.
+
+**Anchor**: where a caption box sits, `bottom` or `top`. Comes from the theme; a caption may override it with `anchor` (used to keep the box off what the camera frames, e.g. the terminal's table).
 
 **Quality tier**: `low` or `high`, detected once at startup and passed to every world.
 

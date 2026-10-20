@@ -44,4 +44,5 @@ export const terminal = defineWorld({
   },
   sound,
   captions,
+  theme: 'terminal',
 })

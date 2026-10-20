@@ -48,4 +48,5 @@ export const voxel = defineWorld({
   },
   sound,
   captions,
+  theme: 'voxel',
 })
