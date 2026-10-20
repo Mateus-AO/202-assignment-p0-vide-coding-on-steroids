@@ -83,6 +83,19 @@
     font-smooth: never;
     text-rendering: optimizeSpeed;
   }
+  /* `bottom-right` anchor: a narrow box in the corner on wide screens, full width on phones. */
+  @media (min-width: 640px) {
+    [data-anchor='bottom-right'] {
+      display: flex;
+      justify-content: flex-end;
+    }
+    [data-anchor='bottom-right'] .caption-box {
+      width: min(100%, 480px);
+      --caption-font-size: 12px;
+      --caption-line-height: 19px;
+      --caption-padding: 16px 18px;
+    }
+  }
   /* Border styles of a caption's theme (data-border). `solid` is the stepped box above. */
   .caption-box[data-border='double'] {
     box-shadow:
@@ -261,8 +274,10 @@
  * caption themes; "merge" and the pull-request glyph stay --mt-merge in every look.
  */
 .merge-title {
-  --mt-size: clamp(26px, min(6.4vw, 9.6vh), 120px);
-  --mt-sub: clamp(10px, 1.1vw, 14px);
+  /* One line: the text and glyph are about 23.1em wide, so the size follows the width. */
+  --mt-pad-x: 48px;
+  --mt-size: min(34px, calc((100vw - 32px - var(--mt-pad-x)) / 23.6));
+  --mt-sub: clamp(10px, 0.95vw, 12px);
   --mt-surface: #14101f;
   --mt-border: #f2e9c9;
   --mt-text: #f2e9c9;
@@ -279,7 +294,11 @@
   box-sizing: border-box;
   height: 36vh;
   height: 36dvh;
-  padding: 12px 16px 0;
+  /* The box is centred in the band the arena leaves free above it. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
   pointer-events: none;
   visibility: hidden;
   opacity: 0;
@@ -293,11 +312,12 @@
 }
 @media (max-width: 640px) {
   .merge-title {
-    --mt-size: min(9.6vw, 4.4vh);
+    --mt-pad-x: 28px;
+    --mt-size: min(34px, calc((100vw - 20px - var(--mt-pad-x)) / 23.6));
     --mt-sub: 10px;
     height: 38vh;
     height: 38dvh;
-    padding: 8px 10px 0;
+    padding: 0 10px;
   }
 }
 /* Short screens (small phones, phones on their side): smaller type so the box still fits. */
@@ -308,23 +328,21 @@
 }
 @media (max-height: 560px) and (min-width: 641px) {
   .merge-title {
-    --mt-size: 5.4vh;
+    --mt-size: min(24px, calc((100vw - 32px - var(--mt-pad-x)) / 23.6));
     --mt-sub: 8px;
     height: 38vh;
-    padding: 8px 12px 0;
-  }
-  .mt-panel {
-    padding: 4px 14px;
   }
 }
 .mt-panel {
   box-sizing: border-box;
-  height: 100%;
+  /* Hugs the one-line title (never the full viewport width); the subtitle wraps inside it. */
+  width: min(100%, calc(var(--mt-size) * 23.6 + var(--mt-pad-x)));
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: calc(var(--mt-size) * 0.3);
-  padding: 8px 18px;
+  gap: calc(var(--mt-size) * 0.4);
+  padding: 12px 18px;
+  text-align: center;
   overflow: hidden;
   border: 6px solid var(--mt-border);
   background: color-mix(in srgb, var(--mt-surface) 90%, transparent);
@@ -338,6 +356,17 @@
 }
 .merge-title[data-border='none'] .mt-panel {
   border-color: transparent;
+}
+@media (max-width: 640px) {
+  .mt-panel {
+    padding: 8px 10px;
+    border-width: 4px;
+  }
+}
+@media (max-height: 560px) and (min-width: 641px) {
+  .mt-panel {
+    padding: 4px 14px;
+  }
 }
 .mt-stack {
   position: relative;
@@ -363,7 +392,7 @@
   font-size: var(--mt-size);
   line-height: calc(var(--mt-size) * 1.3);
   color: var(--mt-text);
-  text-wrap: balance;
+  white-space: nowrap;
 }
 /*
  * The pixel face advances exactly 1em per character. The mono face is drawn 25% larger with

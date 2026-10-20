@@ -1,5 +1,8 @@
-/** Where a caption box sits on the screen. */
-export type CaptionAnchor = 'bottom' | 'top'
+/**
+ * Where a caption box sits on the screen. `bottom-right` is a narrow box in the corner on
+ * wide screens; on phones it is the same full-width box as `bottom`.
+ */
+export type CaptionAnchor = 'bottom' | 'top' | 'bottom-right'
 
 /** How a caption's text appears as the world's progress passes its range. */
 export type CaptionReveal = 'scramble' | 'typewriter' | 'fade'
@@ -70,7 +73,7 @@ export const CAPTION_THEMES: Record<CaptionThemeId, CaptionTheme> = {
     },
     border: 'solid',
     font: 'pixel',
-    anchor: 'top',
+    anchor: 'bottom-right',
     reveal: 'typewriter',
   },
   terminal: {

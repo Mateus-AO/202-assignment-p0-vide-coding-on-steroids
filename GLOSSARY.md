@@ -24,7 +24,7 @@
 
 **Theme**: the look of a caption box: colours, border style, font (pixel or mono), anchor and reveal effect. One per world (`theme:` in `world.ts`), kept in the registry `CAPTION_THEMES` (`core/captionTheme.ts`); a caption may override it with its own `theme`. Resolution: caption, then world, then Pong.
 
-**Anchor**: where a caption box sits, `bottom` or `top`. Comes from the theme; a caption may override it with `anchor` (used to keep the box off what the camera frames, e.g. the terminal's table).
+**Anchor**: where a caption box sits: `bottom`, `top`, or `bottom-right` (a narrow corner box on wide screens, full width at the bottom on phones). Comes from the theme; a caption may override it with `anchor` (used to keep the box off what the camera frames, e.g. the terminal's table).
 
 **Quality tier**: `low` or `high`, detected once at startup and passed to every world.
 
@@ -32,7 +32,7 @@
 
 **Tableau**: the calm final pose of the arena's cast during the `title` beat, standing inside the merge ring.
 
-**Title**: the giant "You can merge anything" DOM overlay at the top of the screen over the arena (`app/MergeTitle.tsx`), with the REA link as its subtitle. Written by the scramble reveal over the arena's `title` beat.
+**Title**: the "You can merge anything" DOM overlay at the top of the screen over the arena: one line in a centred box that hugs the text (at most about 850 px wide on desktop) (`app/MergeTitle.tsx`), with the REA link as its subtitle. Written by the scramble reveal over the arena's `title` beat.
 
 **Glitch cycle**: the title's clock-driven loop, a documented exception to scroll-driven scenes: every ~2 s the text glitches for ~220 ms and then holds the next world's look (`CAPTION_THEMES` order: pong, voxel, platformer, terminal, wall, arena). Pure in the title's own clock (`app/mergeTitle/glitch.ts`); off under reduced motion.
 

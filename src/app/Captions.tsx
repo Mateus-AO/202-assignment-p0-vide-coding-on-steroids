@@ -15,6 +15,7 @@ const worldProgress: ProgressSource = {
  */
 const ANCHOR_CLASS = {
   bottom: 'bottom-0',
+  'bottom-right': 'bottom-0',
   top: 'top-0 pt-14 sm:pt-16',
 } as const
 
