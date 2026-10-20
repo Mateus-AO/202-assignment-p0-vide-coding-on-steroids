@@ -56,3 +56,4 @@ tmp
 
 # Agent worktrees
 .claude/worktrees/
+.vercel
