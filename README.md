@@ -7,6 +7,8 @@ world merges.
 
 **Live:** https://mao-202-p0-landing.vercel.app
 
+This is the **P0 assignment of the Trilha 202**, available at <https://202lab.com.br/>.
+
 There are no playable games. Every texture, character and sound is drawn or synthesized in
 code, and the page respects reduced motion and adapts to phones.
 
