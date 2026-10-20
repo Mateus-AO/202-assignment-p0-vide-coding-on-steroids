@@ -49,7 +49,7 @@ export const CAPTION_THEMES: Record<CaptionThemeId, CaptionTheme> = {
     id: 'voxel',
     colors: {
       surface: '#2b2118',
-      border: '#7a6a55',
+      border: '#a08c6a',
       text: '#e8e1d4',
       accent: '#6fbf4a',
       muted: '#b5a78f',
@@ -116,6 +116,49 @@ export const CAPTION_THEMES: Record<CaptionThemeId, CaptionTheme> = {
     reveal: 'typewriter',
   },
 }
-
 /** The green of "merge" and the pull-request glyph, the same in every theme. */
 export const MERGE_GREEN = '#3fb950'
+
+/** What decides a caption's look: its own override, else the world's theme, else Pong's. */
+export const DEFAULT_CAPTION_THEME: CaptionThemeId = 'pong'
+
+/**
+ * The theme a caption is drawn with: `caption.theme`, else the world's `theme`, else the
+ * default. An id outside the registry also falls back, so a bad value never draws a blank box.
+ */
+export function resolveCaptionTheme(
+  caption: { theme?: CaptionThemeId } | undefined,
+  worldTheme?: CaptionThemeId,
+): CaptionTheme {
+  const id = caption?.theme ?? worldTheme ?? DEFAULT_CAPTION_THEME
+  return CAPTION_THEMES[id] ?? CAPTION_THEMES[DEFAULT_CAPTION_THEME]
+}
+
+/** Where a caption's box sits: its own `anchor`, else the resolved theme's. */
+export function resolveCaptionAnchor(
+  caption: { anchor?: CaptionAnchor } | undefined,
+  theme: CaptionTheme,
+): CaptionAnchor {
+  return caption?.anchor ?? theme.anchor
+}
+
+const channel = (v: number) => {
+  const c = v / 255
+  return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
+}
+
+/** WCAG relative luminance of a `#rrggbb` colour. */
+export function luminance(hex: string): number {
+  const n = parseInt(hex.slice(1), 16)
+  return (
+    0.2126 * channel((n >> 16) & 255) +
+    0.7152 * channel((n >> 8) & 255) +
+    0.0722 * channel(n & 255)
+  )
+}
+
+/** WCAG contrast ratio of two `#rrggbb` colours, from 1 (identical) to 21 (black on white). */
+export function contrastRatio(a: string, b: string): number {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x)
+  return (hi + 0.05) / (lo + 0.05)
+}

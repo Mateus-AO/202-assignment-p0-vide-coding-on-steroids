@@ -26,6 +26,10 @@
   /* Stats row and footnote: a small, legible monospace face instead of the pixel font. */
   --caption-small-size: 12px;
   --caption-small-line: 18px;
+  /* Themes with the mono face (data-font='mono') write the headline and body in it, larger
+     per character count than the pixel face. */
+  --caption-mono-size: 15px;
+  --caption-mono-line: 24px;
 }
 
 /* Wide screens: a wider box keeps the body on fewer lines and so the box short. */
@@ -42,6 +46,8 @@
     --caption-font-size: 12px;
     --caption-line-height: 20px;
     --caption-padding: 16px;
+    --caption-mono-size: 13px;
+    --caption-mono-line: 20px;
   }
 }
 
@@ -76,6 +82,40 @@
     -webkit-font-smoothing: none;
     font-smooth: never;
     text-rendering: optimizeSpeed;
+  }
+  /* Border styles of a caption's theme (data-border). `solid` is the stepped box above. */
+  .caption-box[data-border='double'] {
+    box-shadow:
+      0 calc(var(--b) * -1) 0 0 var(--caption-border),
+      0 var(--b) 0 0 var(--caption-border),
+      calc(var(--b) * -1) 0 0 0 var(--caption-border),
+      var(--b) 0 0 0 var(--caption-border),
+      inset 0 0 0 3px var(--caption-bg),
+      inset 0 0 0 5px var(--caption-border),
+      calc(var(--b) * 3) calc(var(--b) * 3) 0 0 var(--caption-shadow);
+  }
+  .caption-box[data-border='dashed'] {
+    border: 3px dashed var(--caption-border);
+    box-shadow: calc(var(--b) * 2) calc(var(--b) * 2) 0 0 var(--caption-shadow);
+  }
+  .caption-box[data-border='none'] {
+    box-shadow: calc(var(--b) * 2) calc(var(--b) * 2) 0 0 var(--caption-shadow);
+  }
+  /* The mono face: headline and body in the monospace font, smoothed like the stats. */
+  .caption-box[data-font='mono'] {
+    font-family: var(--font-mono);
+    font-size: var(--caption-mono-size);
+    line-height: var(--caption-mono-line);
+    -webkit-font-smoothing: auto;
+    font-smooth: auto;
+    text-rendering: auto;
+  }
+  .caption-box[data-font='mono'] .caption-kicker {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+  }
+  .caption-box[data-font='mono'] .caption-headline {
+    font-weight: 700;
   }
   /* Small pixel button (the sound toggle). No transitions: nothing flashes. */
   .pixel-button {

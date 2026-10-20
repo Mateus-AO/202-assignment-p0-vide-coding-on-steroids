@@ -1,10 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import { captionLabel, captionProblem } from '@/core/caption'
+import { CAPTION_THEME_IDS, resolveCaptionTheme } from '@/core/captionTheme'
 import { captionChars, PROGRESS_PER_CHAR } from '@/core/reveal'
 import { worlds } from './worlds'
 
-/** A phone box (about 310 px of text) must stay short; this is the longest copy it can hold. */
-const MAX_CHARS = 260
+/**
+ * A phone box (about 310 px of text) must stay short; this is the longest copy it can hold.
+ * The pixel face is 12 px wide per character on a phone, the monospace face about 7.8 px, so a
+ * monospace theme holds more words in the same height (checked on 390 x 844 screenshots).
+ */
+const MAX_CHARS = { pixel: 260, mono: 340 }
 /** Stat labels and values sit in cells about 150 px wide on a phone. */
 const MAX_STAT_CHARS = 14
 
@@ -26,6 +31,13 @@ describe.each(worlds.map((w) => [w.id, w] as const))('captions of %s', (_, world
     })
   })
 
+  it('have a theme that exists, and the world names one (the starter draws its own words)', () => {
+    if (world.id !== 'starter') expect(world.theme).toBeDefined()
+    for (const c of world.captions) {
+      expect(CAPTION_THEME_IDS).toContain(resolveCaptionTheme(c, world.theme).id)
+    }
+  })
+
   it('have different labels, which the page uses as keys', () => {
     const labels = world.captions.map(captionLabel)
     expect(new Set(labels).size).toBe(labels.length)
@@ -34,7 +46,8 @@ describe.each(worlds.map((w) => [w.id, w] as const))('captions of %s', (_, world
   it('fit a phone and stay on screen long enough to be written and read', () => {
     for (const c of world.captions) {
       const chars = captionChars(c)
-      expect(chars, captionLabel(c)).toBeLessThanOrEqual(MAX_CHARS)
+      const font = resolveCaptionTheme(c, world.theme).font
+      expect(chars, captionLabel(c)).toBeLessThanOrEqual(MAX_CHARS[font])
       for (const s of c.stats ?? []) {
         expect(s.label.length, s.label).toBeLessThanOrEqual(MAX_STAT_CHARS)
         expect(s.value.length, s.value).toBeLessThanOrEqual(MAX_STAT_CHARS)

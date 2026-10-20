@@ -1,10 +1,19 @@
-type Props = { on: boolean; onToggle: () => void }
+import type { CaptionTheme } from '@/core/captionTheme'
+import { themeVars } from './themeVars'
+
+type Props = {
+  on: boolean
+  onToggle: () => void
+  /** The active world's caption theme: the button wears its colours. Omit for the defaults. */
+  theme?: CaptionTheme
+}
 
 /** Small pixel speaker button. Static: no animation, no flash. */
-export function SoundToggle({ on, onToggle }: Props) {
+export function SoundToggle({ on, onToggle, theme }: Props) {
   return (
     <button
       type="button"
+      style={theme ? themeVars(theme) : undefined}
       data-sound-toggle
       aria-pressed={on}
       aria-label="Sound"

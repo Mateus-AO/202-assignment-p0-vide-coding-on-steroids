@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { SoundToggle } from '@/components/SoundToggle'
+import { CAPTION_THEMES } from '@/core/captionTheme'
 import { createAudioEngine, getStorage, readFlag, writeFlag } from '@/utils/audio'
 import { usePrefersReducedMotion } from '@/utils/hooks/usePrefersReducedMotion'
 import type { QualityTier } from '@/utils/three/quality'
@@ -74,5 +75,9 @@ export function SoundControl({ quality }: { quality: QualityTier }) {
     writeFlag(getStorage(), STORAGE_KEY, next)
   }
 
-  return <SoundToggle on={on} onToggle={toggle} />
+  // The world's id only changes at a handoff, so this does not re-render per frame.
+  const themeId = useAppStore((s) => s.frame.world.theme)
+  return (
+    <SoundToggle on={on} onToggle={toggle} theme={themeId && CAPTION_THEMES[themeId]} />
+  )
 }

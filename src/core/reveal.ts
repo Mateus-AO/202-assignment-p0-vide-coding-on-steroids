@@ -1,5 +1,6 @@
 import { clamp } from '@/utils/math'
 import type { Caption } from './caption'
+import type { CaptionReveal } from './captionTheme'
 
 /**
  * The caption reveal: a terminal-style scramble that resolves into the text as the world's
@@ -131,17 +132,79 @@ export function scrambled(text: string, progress: number, seed: number): string 
   return r.done + r.noise
 }
 
+/**
+ * `text` typed left to right: the first `progress * length` characters are written, the next one
+ * sits under the cursor and nothing is scrambled. Same pieces and same final layout as
+ * `scramble`, so the box keeps its size.
+ */
+export function typewriter(text: string, progress: number): Revealed {
+  const n = text.length
+  if (progress < 0) return { done: '', noise: '', cursor: '', rest: text }
+  if (progress >= 1) return { done: text, noise: '', cursor: '', rest: '' }
+  const head = Math.floor(progress * n)
+  return {
+    done: text.slice(0, head),
+    noise: '',
+    cursor: head < n ? text[head] : '',
+    rest: text.slice(head + 1),
+  }
+}
+
+/** A line's pieces for `effect`. A `fade` line is whole as soon as it is reached (see `fadeAlpha`). */
+export function revealText(
+  effect: CaptionReveal,
+  text: string,
+  progress: number,
+  seed: number,
+): Revealed {
+  if (effect === 'typewriter') return typewriter(text, progress)
+  if (effect === 'fade')
+    return progress < 0
+      ? { done: '', noise: '', cursor: '', rest: text }
+      : { done: text, noise: '', cursor: '', rest: '' }
+  return scramble(text, progress, seed)
+}
+
+/** The visible text only, for text in a fixed-size slot (stat labels). */
+export function revealedText(
+  effect: CaptionReveal,
+  text: string,
+  progress: number,
+  seed: number,
+): string {
+  const r = revealText(effect, text, progress, seed)
+  return r.done + r.noise
+}
+
+/** A fade is drawn in this many steps, which keeps the pixel look and the DOM writes few. */
+export const FADE_STEPS = 6
+
+/** Opacity of a `fade` line or stat at its progress: 0 before it, 1 when written, in steps. */
+export function fadeAlpha(progress: number): number {
+  if (progress < 0) return 0
+  if (progress >= 1) return 1
+  return Math.floor(progress * FADE_STEPS) / FADE_STEPS
+}
+
 const NUMBER = /^(\d[\d,]*)(?:\.(\d+))?([\s\S]*)$/
 
 /**
  * A stat value at `progress`: a leading number counts up from 0 (keeping its decimals, and
- * the text after it), anything else scrambles in. Ends exactly at `value`.
+ * the text after it), anything else scrambles in (`scramble`) or is typed (`typewriter`).
+ * With `fade` the value is whole from the start (its opacity carries the reveal). Ends exactly
+ * at `value`.
  */
-export function statValue(value: string, progress: number, seed: number): string {
+export function statValue(
+  value: string,
+  progress: number,
+  seed: number,
+  effect: CaptionReveal = 'scramble',
+): string {
   if (progress >= 1) return value
   if (progress <= 0) return ''
+  if (effect === 'fade') return value
   const m = NUMBER.exec(value)
-  if (!m) return scrambled(value, progress, seed)
+  if (!m) return revealedText(effect, value, progress, seed)
   const decimals = m[2]?.length ?? 0
   const target = Number(m[1].replace(/,/g, '') + (decimals ? `.${m[2]}` : ''))
   const eased = 1 - (1 - progress) * (1 - progress)
