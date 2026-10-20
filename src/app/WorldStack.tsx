@@ -6,23 +6,25 @@ import { markReady, READY_NEXT_WORLD } from '@/core/readiness'
 import type { PortalExit, WorldModule } from '@/core/world'
 import type { QualityTier } from '@/utils/three/quality'
 import { CrtShutdown } from '@/utils/transitions/CrtShutdown'
-import { ScreenMosaic, type CoverPhase } from '@/utils/transitions/ScreenMosaic'
+import { GlitchCover } from '@/utils/transitions/GlitchCover'
+import { coverFor } from '@/utils/transitions/overlays'
+import { ScreenMosaic } from '@/utils/transitions/ScreenMosaic'
 import { usePrefersReducedMotion } from '@/utils/hooks/usePrefersReducedMotion'
 import { getFrame, useAppStore } from './store'
 import { worlds } from './worlds'
 
 const getU = () => getFrame().u
 const getZero = () => 0
-const COVER_OFF: CoverPhase = { mode: 0, t: 0 }
-/** The mosaic draws every cover except the CRT shutdown, which `CrtShutdown` draws. */
-const getCover = () => {
-  const cover = getFrame().cover
-  return cover.style === 'crt' ? COVER_OFF : cover
-}
-const getCrt = () => {
-  const cover = getFrame().cover
-  return cover.style === 'crt' ? cover : COVER_OFF
-}
+/** The mosaic draws every cover except the CRT shutdown and the glitch, which have their own. */
+const getCover = () => coverFor('mosaic', getFrame().cover)
+const getCrt = () => coverFor('crt', getFrame().cover)
+const getGlitch = () => coverFor('glitch', getFrame().cover)
+
+/** Whether a glitch cover leaves this world or enters it (the only two worlds it is drawn in). */
+const hasGlitch = (index: number) =>
+  [worlds[index]?.exit, worlds[index - 1]?.exit].some(
+    (exit) => exit?.kind === 'cover' && exit.style === 'glitch',
+  )
 
 /** Moves the camera along the active world's path. */
 export function CameraRig() {
@@ -94,6 +96,9 @@ export function WorldStack({ quality }: { quality: QualityTier }) {
       </group>
       <ScreenMosaic getPhase={getCover} simple={reduced} />
       <CrtShutdown getPhase={getCrt} simple={reduced} />
+      {hasGlitch(index) && (
+        <GlitchCover getPhase={getGlitch} quality={quality} simple={reduced} />
+      )}
     </>
   )
 }
