@@ -35,3 +35,5 @@
 **Title**: the giant "You can merge anything" DOM overlay at the top of the screen over the arena (`app/MergeTitle.tsx`), with the REA link as its subtitle. Written by the scramble reveal over the arena's `title` beat.
 
 **Glitch cycle**: the title's clock-driven loop, a documented exception to scroll-driven scenes: every ~2 s the text glitches for ~220 ms and then holds the next world's look (`CAPTION_THEMES` order: pong, voxel, platformer, terminal, wall, arena). Pure in the title's own clock (`app/mergeTitle/glitch.ts`); off under reduced motion.
+
+**Scroll end**: the scroll offset where overall progress reaches 1: the bottom of the scroll spacer lined up with the bottom of the viewport. Content after the spacer is the **footer** (`app/Footer.tsx`), which scrolls into view with progress held at 1.
